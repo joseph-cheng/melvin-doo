@@ -1,10 +1,17 @@
 <!DOCTYPE html>
+<script src="script.js"></script>
 
 <html>
 <body>
     Hello, world!
+    <div id="votesTable"></div>
+
+    <div id="tradesTable"></div>
 
 <script>
+let votesDiv = document.getElementById("votesTable");
+let tradesDiv = document.getElementById("tradesTable");
+let data = getCongresspersonData("testdata", votesDiv, tradesDiv);
 </script>
 
 

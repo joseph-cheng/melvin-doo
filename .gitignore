@@ -1,9 +1,10 @@
 *.swp
 *~
 *.log
+*.csv
 /env/
 .idea/
 /long_term_bill_records/
-
 apikey.txt
 /src/scraper/credentials.json
+__pycache__/
