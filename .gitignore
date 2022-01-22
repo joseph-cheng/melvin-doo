@@ -1,8 +1,9 @@
 *.swp
 *~
 *.log
+*.csv
 /env/
 .idea/
 /long_term_bill_records/
-
 apikey.txt
+/__pycache__/
