@@ -1,9 +1,9 @@
 <!DOCTYPE html> 
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
 <!-- Compiled and minified CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
-<!-- Compiled and minified JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
             
 <script src="script.js"></script>
@@ -18,10 +18,19 @@
         </div>
     </div>
 
+    <div class="container">
+        <div class="row">
+            <div class="col" id="chartDiv"></div>
+            <canvas id="chartCanvas" height="300" width="600"></canvas>
+        </div>
+    </div>
+
 <script>
 let votesDiv = document.getElementById("votesTable");
 let tradesDiv = document.getElementById("tradesTable");
-let data = getCongresspersonData("testdata", votesDiv, tradesDiv);
+let chartCanvas = document.getElementById("chartCanvas");
+getCongresspersonData("testdata", votesDiv, tradesDiv);
+getStockData('abc', 0, 100, chartCanvas);
 </script>
 
 
