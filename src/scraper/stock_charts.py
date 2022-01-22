@@ -1,4 +1,6 @@
 import datetime
+import os
+
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -9,12 +11,14 @@ from oauth2client.service_account import ServiceAccountCredentials
 #       resolution - Step size between data points (defaults to DAILY, can be set to WEEKLY)
 #
 # RETURN: A list of tuples of the date and the value the stock it traded for
-def get_stock_data(ticker: str, start: datetime, end: datetime, resolution: str = "DAILY"):
+def get_stock_prices(ticker: str, start: datetime, end: datetime, resolution: str = "DAILY"):
     query = f'=GOOGLEFINANCE("***REMOVED***ticker***REMOVED***", "price", DATE(***REMOVED***start.year***REMOVED***,***REMOVED***start.month***REMOVED***,***REMOVED***start.day***REMOVED***), ' \
             f'DATE(***REMOVED***end.year***REMOVED***,***REMOVED***end.month***REMOVED***,***REMOVED***end.day***REMOVED***), "***REMOVED***resolution***REMOVED***")'
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets",
              "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", scope)
+
+    print(os.getcwd())
+    creds = ServiceAccountCredentials.from_json_keyfile_name("src/scraper/credentials.json", scope)
 
     client = gspread.authorize(creds)
     sheet = client.open("stocks").sheet1
@@ -35,4 +39,4 @@ def get_stock_data(ticker: str, start: datetime, end: datetime, resolution: str 
 if __name__ == "__main__":
     start = datetime.datetime(2019, 4, 20)
     end = datetime.datetime(2019, 7, 30)
-    res = get_stock_data("TSLA", start, end)
+    res = get_stock_prices("TSLA", start, end)
