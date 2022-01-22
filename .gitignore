@@ -6,3 +6,4 @@
 /long_term_bill_records/
 
 apikey.txt
+/src/scraper/credentials.json
