@@ -25,21 +25,41 @@ function getStockData(ticker, start, end, chartDiv) {
 
 function buildChart(data, start, end, chartCanvas) {
     const ctx = chartCanvas.getContext('2d');
+    const newdata = makeArrWithZip(start, end, data.length, data);
+    const labels = makeArr(start, end, data.length);
 
     const chartData = {
-        labels: makeArr(start, end, data.length),
+        labels: labels,
         datasets: [{
             label: "Price",
-            data: data,
+            data: newdata,
             fill: false,
             borderColor: 'rgb(75, 192, 192)',
-            tension: 0.1,
+            tension: 0.0,
         }]
+    };
+
+    const annotation = {
+        type: "line",
+        mode: "vertical",
+        scaleID: "x",
+        value: 30,
+        borderColor:"red",
+        borderWidth: 1,
     };
 
     const chart = new Chart(ctx, {
         type: 'line',
-        data: chartData
+        data: chartData,
+        options: {
+            plugins: {
+                annotation: {
+                    annotations: {
+                        annotation
+                    }
+                }
+            }
+        }
     });
 
 
@@ -84,11 +104,20 @@ function addAllColumnHeaders(arr, table) {
   return columnSet;
 }
 
-function makeArr(startValue, stopValue, cardinality) {
+function makeArr(startValue, stopValue, cardinality, data) {
   var arr = [];
   var step = (stopValue - startValue) / (cardinality - 1);
   for (var i = 0; i < cardinality; i++) {
     arr.push(startValue + (step * i));
+  }
+  return arr;
+}
+
+function makeArrWithZip(startValue, stopValue, cardinality, data) {
+  var arr = [];
+  var step = (stopValue - startValue) / (cardinality - 1);
+  for (var i = 0; i < cardinality; i++) {
+    arr.push({x: startValue + (step * i), y: data[i]});
   }
   return arr;
 }
