@@ -1,23 +1,47 @@
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common.keys import Keys
-import time
-
-options = Options()
-options.add_argument("--headless")
-driver = webdriver.Firefox(firefox_options=options, executable_path="/usr/local/bin/geckodriver")
-
-url = "https://app.capitoltrades.com/trades?page=1&pageSize=100"
-
-driver.get(url)
-
-# lol
-time.sleep(2)
-
-next_page_button = driver.find_elements_by_css_selector(".p-ripple .p-element .p-paginator-next .p-paginator-element .p-link")
-
-print(next_page_button)
-
-driver.quit()
+import csv
+import os
+from dataclasses import dataclass
+from typing import Dict
 
 
+@dataclass
+class Bill:
+    house: str
+    title: str
+    desc: str
+    votes: Dict[str, int]
+
+
+def get_bill(bill_name: str):
+    votes = dict()
+    house = ""
+    data_path = "../../long_term_bill_records"
+    votes_path = ""
+    if os.path.exists(f"***REMOVED***data_path***REMOVED***/house_vote/***REMOVED***bill_name***REMOVED***.csv"):
+        house = "HOUSE"
+        votes_path = f"***REMOVED***data_path***REMOVED***/house_vote/***REMOVED***bill_name***REMOVED***.csv"
+    elif os.path.exists(f"***REMOVED***data_path***REMOVED***/senate_vote/***REMOVED***bill_name***REMOVED***.csv"):
+        house = "SENATE"
+        votes_path = f"***REMOVED***data_path***REMOVED***/senate_vote/***REMOVED***bill_name***REMOVED***.csv"
+    else:
+        print("Error: could not find file...")
+    with open(votes_path) as file:
+        reader = csv.reader(file, delimiter='|')
+        for row in reader:
+            name, vote = row
+            vote = int(vote)
+            votes[name] = vote
+
+    title_file = open(f"***REMOVED***data_path***REMOVED***/full_text/***REMOVED***bill_name***REMOVED***.txt", "r")
+    title = title_file.readline()
+
+    desc_file = open(f"***REMOVED***data_path***REMOVED***/summary/***REMOVED***bill_name***REMOVED***.txt", "r")
+    desc = desc_file.readline()
+
+    return Bill(house, title, desc, votes)
+
+
+if __name__ == "__main__":
+
+    b = get_bill("BILLS-112s307rfh")
+    print(b)

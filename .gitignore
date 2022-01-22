@@ -3,3 +3,6 @@
 *.log
 /env/
 .idea/
+/long_term_bill_records/
+
+apikey.txt
