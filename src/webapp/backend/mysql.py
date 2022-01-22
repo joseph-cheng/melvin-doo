@@ -1,5 +1,6 @@
 import pymysql
 import datetime
+import companies_scraper
 
 
 class Bill:
@@ -8,6 +9,7 @@ class Bill:
 		self.house = house
 		self.votes = votes
 		self.date = date
+
 
 class Trade:
 	def __init__(self, person, ticker, buy_or_sell, date):
@@ -20,7 +22,7 @@ class Trade:
 def _open_connection():
 	conn = pymysql.connect(
 		host='localhost',
-		user='root',
+		user='user',
 		password="pass",
 		db='melvindoo',
 	)
@@ -29,6 +31,7 @@ def _open_connection():
 
 
 def _close_connection(conn):
+	conn.commit()
 	conn.close()
 
 
@@ -40,82 +43,82 @@ def _execute_sql(conn, command):
 
 # Add a new person to the Persons table
 def _add_person(conn, name):
-	_execute_sql(conn, "INSERT INTO Persons (name) VALUES ('***REMOVED******REMOVED***');".format(name))
+	_execute_sql(conn, "INSERT INTO persons (name) VALUES ('***REMOVED******REMOVED***');".format(name))
 
 
 # Remove a person from the Persons table
 def _remove_person(conn, name):
-	_execute_sql(conn, "DELETE FROM Persons WHERE name='***REMOVED******REMOVED***';".format(name))
+	_execute_sql(conn, "DELETE FROM persons WHERE name='***REMOVED******REMOVED***';".format(name))
 
 
 # Add a new category to the Categories table
 def _add_category(conn, category):
-	_execute_sql(conn, "INSERT INTO Categories (category) VALUES ('***REMOVED******REMOVED***');".format(category))
+	_execute_sql(conn, "INSERT INTO categories (category) VALUES ('***REMOVED******REMOVED***');".format(category))
 
 
 # Remove a category from the Categories table
 def _remove_category(conn, category):
-	_execute_sql(conn, "DELETE FROM Categories WHERE category='***REMOVED******REMOVED***';".format(category))
+	_execute_sql(conn, "DELETE FROM categories WHERE category='***REMOVED******REMOVED***';".format(category))
 
 
 # Add a new bill to the Bills table
 def _add_bill(conn, bill, house):
-	_execute_sql(conn, "INSERT INTO Bills (bill, house) VALUES ('***REMOVED***0***REMOVED***', '***REMOVED***1***REMOVED***');".format(bill, house))
+	_execute_sql(conn, "INSERT INTO bills (bill, house) VALUES ('***REMOVED***0***REMOVED***', '***REMOVED***1***REMOVED***');".format(bill, house))
 
 
 # Remove a bill from the Bills table
 def _remove_bill(conn, bill):
-	_execute_sql(conn, "DELETE FROM Bills WHERE bill='***REMOVED******REMOVED***';".format(bill))
+	_execute_sql(conn, "DELETE FROM bills WHERE bill='***REMOVED******REMOVED***';".format(bill))
 
 
 # Add a new company to the Companies table
 def _add_company(conn, company):
-	_execute_sql(conn, "INSERT INTO Companies (company) VALUES ('***REMOVED******REMOVED***');".format(company))
+	_execute_sql(conn, "INSERT INTO companies (company) VALUES ('***REMOVED******REMOVED***');".format(company))
 
 
 # Remove a company from the Companies table
 def _remove_company(conn, company):
-	_execute_sql(conn, "DELETE FROM Companies WHERE company='***REMOVED******REMOVED***';".format(company))
+	_execute_sql(conn, "DELETE FROM companies WHERE company='***REMOVED******REMOVED***';".format(company))
 
 
 # Add a new bill category pair to the BillCategories table
 def _add_bill_category(conn, billID, categoryID):
-	_execute_sql(conn, "INSERT INTO BillCategories (bill_ID, category_ID) VALUES (***REMOVED***0***REMOVED***, ***REMOVED***1***REMOVED***);".format(billID, categoryID))
+	_execute_sql(conn, "INSERT INTO billcategories (bill_ID, category_ID) VALUES (***REMOVED***0***REMOVED***, ***REMOVED***1***REMOVED***);".format(billID, categoryID))
 
 
 # Remove a bill category pair from the BillCategories table
 def _remove_bill_category(conn, billID, categoryID):
-	_execute_sql(conn, "DELETE FROM BillCategories WHERE bill_ID = ***REMOVED***0***REMOVED*** AND category_ID = ***REMOVED***1***REMOVED***;".format(billID, categoryID))
+	_execute_sql(conn, "DELETE FROM billcategories WHERE bill_ID = ***REMOVED***0***REMOVED*** AND category_ID = ***REMOVED***1***REMOVED***;".format(billID, categoryID))
 
 
 # Add a new company category pair to the CompanyCategory table
 def _add_company_category(conn, companyID, categoryID):
-	_execute_sql(conn, "INSERT INTO CompanyCategories (company_ID, category_ID) VALUES (***REMOVED***0***REMOVED***, ***REMOVED***1***REMOVED***);".format(companyID, categoryID))
+	_execute_sql(conn, "INSERT INTO companycategories (company_ID, category_ID) VALUES (***REMOVED***0***REMOVED***, ***REMOVED***1***REMOVED***);".format(companyID, categoryID))
 
 
 # Remove a bill category pair from the BillCategories table
 def _remove_company_category(conn, companyID, categoryID):
-	_execute_sql(conn, "DELETE FROM CompanyCategories WHERE company_ID = ***REMOVED***0***REMOVED*** AND category_ID = ***REMOVED***1***REMOVED***;".format(companyID, categoryID))
+	_execute_sql(conn, "DELETE FROM companycategories WHERE company_ID = ***REMOVED***0***REMOVED*** AND category_ID = ***REMOVED***1***REMOVED***;".format(companyID, categoryID))
 
 
 # Add a new trade to the Trades table
 def _add_trade(conn, personID, companyID, wasBuy, date):
-	_execute_sql(conn, "INSERT INTO Trades (person_ID, company_ID, was_buy, date) VALUES (***REMOVED***0***REMOVED***, ***REMOVED***1***REMOVED***, ***REMOVED***2***REMOVED***, '***REMOVED***3***REMOVED***');".format(personID, companyID, 1 if wasBuy else 0, date))
+	_execute_sql(conn, "INSERT INTO trades (person_ID, company_ID, was_buy, date) VALUES (***REMOVED***0***REMOVED***, ***REMOVED***1***REMOVED***, '***REMOVED***2***REMOVED***', STR_TO_DATE('***REMOVED***3***REMOVED***', \"%Y-%m-%d\"));".format(personID, companyID, "buy" if wasBuy else "sell", date))
 
 
 # Remove a trade from the Trades table
 def _remove_trade(conn, personID, companyID, wasBuy, date):
-	_execute_sql(conn, "DELETE FROM Trades WHERE person_ID = ***REMOVED***0***REMOVED*** AND company_ID = ***REMOVED***1***REMOVED*** AND was_buy = ***REMOVED***2***REMOVED*** AND date = '***REMOVED***3***REMOVED***';".format(personID, companyID, 1 if wasBuy else 0, date))
+	_execute_sql(conn, "DELETE FROM trades WHERE person_ID = ***REMOVED***0***REMOVED*** AND company_ID = ***REMOVED***1***REMOVED*** AND was_buy = ***REMOVED***2***REMOVED*** AND date = ***REMOVED***3***REMOVED***;".format(personID, companyID, 1 if wasBuy else 0, date))
 
 
 # Add a new vote to the Votes table
 def _add_vote(conn, personID, billID, votedFor, date):
-	_execute_sql(conn, "INSERT INTO Votes (person_ID, bill_ID, voted_for, date) VALUES (***REMOVED***0***REMOVED***, ***REMOVED***1***REMOVED***, ***REMOVED***2***REMOVED***, '***REMOVED***3***REMOVED***');".format(personID, billID, 1 if votedFor else 0, date))
+	_execute_sql(conn, "INSERT INTO votes (person_ID, bill_ID, voted_for, date) VALUES (***REMOVED***0***REMOVED***, ***REMOVED***1***REMOVED***, ***REMOVED***2***REMOVED***, ***REMOVED***3***REMOVED***);".format(personID, billID, "for" if votedFor else "against", date))
 
 
 # Remove a vote from the Votes table
 def _remove_vote(conn, personID, billID, votedFor, date):
-	_execute_sql(conn, "DELETE FROM Votes WHERE person_ID = ***REMOVED***0***REMOVED*** AND bill_ID = ***REMOVED***1***REMOVED*** AND voted_for = ***REMOVED***2***REMOVED*** AND date = '***REMOVED***3***REMOVED***';".format(personID, billID, 1 if votedFor else 0, date))
+	_execute_sql(conn, "DELETE FROM votes WHERE person_ID = ***REMOVED***0***REMOVED*** AND bill_ID = ***REMOVED***1***REMOVED*** AND voted_for = ***REMOVED***2***REMOVED*** AND date = ***REMOVED***3***REMOVED***;".format(personID, billID, 1 if votedFor else 0, date))
 
 
 # Select all from a table
@@ -144,23 +147,23 @@ def process_vote(conn, bill):
 
 	# Add new bill
 	_add_bill(conn, title, house)
-	billID = _get_id(conn, "Bills", "bill", title)
+	billID = _get_id(conn, "bills", "bill", title)
 
 	# Categorise the bill in the BillCategories table
 	for category in categories:
-		categoryID = _get_id(conn, "Categories", "category", category)
+		categoryID = _get_id(conn, "categories", "category", category)
 		if categoryID is None:
 			# Have found a new category so add it to Categories
 			_add_category(conn, category)
-			categoryID = _get_id(conn, "Categories", "category", category)
+			categoryID = _get_id(conn, "categories", "category", category)
 		_add_bill_category(conn, billID, categoryID)
 
 	# Create a vote entry for each person voting on this bill
 	for person, vote in votes:
-		personID = _get_id(conn, "Persons", "name", person)
+		personID = _get_id(conn, "persons", "name", person)
 		if personID is None:
 			_add_person(conn, person)
-			personID = _get_id(conn, "Persons", "name", person)
+			personID = _get_id(conn, "persons", "name", person)
 		voted_for = vote == 1
 		_add_vote(conn, personID, billID, voted_for, date)
 
@@ -169,37 +172,43 @@ def process_trade(conn, trade):
 	# Extract variables from trade
 	person = trade.person
 	ticker = trade.ticker
-	buy_or_sell = trade.buy_or_sell == "buy"
-	categories = _get_company_categories(ticker)
-	date = trade.date # datetime.date.today()
+	buy_or_sell = True if trade.buy_or_sell == "buy" else False
+	date = trade.date
 
 	# Get the person ID (or add to Persons if a new person)
-	personID = _get_id(conn, "Persons", "name", person)
+	personID = _get_id(conn, "persons", "name", person)
 	if personID is None:
 		_add_person(conn, person)
-		personID = _get_id(conn, "Persons", "name", person)
+		personID = _get_id(conn, "persons", "name", person)
 
 	# Get the ticker ID (or add to Companies if a new ticker)
-	tickerID = _get_id(conn, "Companies", "company", ticker)
+	tickerID = _get_id(conn, "companies", "company", ticker)
 	if tickerID is None:
 		_add_company(conn, ticker)
-		tickerID = _get_id(conn, "Companies", "company", ticker)
-
-	# Categorise the ticker in the CompanyCategories table
-	for category in categories:
-		categoryID = _get_id(conn, "Categories", "category", category)
-		if categoryID is None:
-			# Have found a new category so add it to Categories
-			_add_category(conn, category)
-			categoryID = _get_id(conn, "Categories", "category", category)
-		if len(_get_query(conn, "SELECT * FROM CompanyCategories WHERE company_ID = ***REMOVED***0***REMOVED*** AND category_ID = ***REMOVED***1***REMOVED***;".format(tickerID, categoryID))) == 0:
-			_add_company_category(conn, tickerID, categoryID)
+		tickerID = _get_id(conn, "companies", "company", ticker)
 
 	_add_trade(conn, personID, tickerID, buy_or_sell, date)
 
 
-def _get_company_categories(company):
-	return ["defence", "healthcare"]
+def fill_tickers_and_categories(conn):
+	pairs = companies_scraper.get_ticker_categories()
+
+	for company, categories in pairs:
+		# Get the ticker ID (or add to Companies if a new ticker)
+		ticker_id = _get_id(conn, "companies", "company", company)
+		if ticker_id is None:
+			_add_company(conn, company)
+			ticker_id = _get_id(conn, "companies", "company", company)
+
+		for category in categories:
+
+			category_id = _get_id(conn, "categories", "category", category)
+			if category_id is None:
+				# Have found a new category so add it to Categories
+				_add_category(conn, category)
+				category_id = _get_id(conn, "categories", "category", category)
+
+			_add_company_category(conn, ticker_id, category_id)
 
 
 def get_votes_influenced_by_trades(conn, person, time_range=5):
@@ -216,10 +225,6 @@ def get_votes_influenced_by_trades(conn, person, time_range=5):
 	query += " WHERE (Votes.person_ID = '***REMOVED******REMOVED***');".format(personID)
 
 	res = _get_query(conn, query)
-	'''print("")
-	print("RES:")
-	print(res)
-	print("")'''
 
 	for result in res: # 0=vote id, 1=person id, 2=bill id, 3=was for, 4=bill date, 5=bill category id, 6=bill id, 7=category id, 8=category id, 9=category, 10=trade id, 11=person id, 12=company id
 		# 13=was_buy, 14=trade date, 15=company category id, 16=company id, 17=category id, 18=date diff
@@ -241,26 +246,19 @@ def get_votes_influenced_by_trades(conn, person, time_range=5):
 		bill_name = _get_query(conn, "SELECT bill FROM bills WHERE id = ***REMOVED******REMOVED***;".format(bill_id))[0][0]
 		trade_company = _get_query(conn, "SELECT company FROM companies WHERE id = ***REMOVED******REMOVED***;".format(trade_company_id))[0][0]
 
-		print("Result: bill - ***REMOVED***0***REMOVED***, voted for - ***REMOVED***1***REMOVED***, date - ***REMOVED***2***REMOVED***, trade name - ***REMOVED***3***REMOVED***, type - ***REMOVED***4***REMOVED***, date - ***REMOVED***5***REMOVED***, category - ***REMOVED***6***REMOVED***".format(bill_name, bill_voted_for, bill_date, trade_company, trade_was_buy, trade_date, shared_category))
+		#print("Result: bill - ***REMOVED***0***REMOVED***, voted for - ***REMOVED***1***REMOVED***, date - ***REMOVED***2***REMOVED***, trade name - ***REMOVED***3***REMOVED***, type - ***REMOVED***4***REMOVED***, date - ***REMOVED***5***REMOVED***, category - ***REMOVED***6***REMOVED***".format(bill_name, bill_voted_for, bill_date, trade_company, trade_was_buy, trade_date, shared_category))
 		conflicts.append((bill_name, bill_voted_for, bill_date, trade_company, trade_was_buy, trade_date, shared_category))
-
-	'''tables = _get_query(conn, "SHOW TABLES;")
-	print(tables)
-	for table in tables:
-		print("Table: " + str(table[0]))
-		print(_select_all(conn, table[0]))'''
 
 	return conflicts
 
 
 if __name__ == "__main__":
-	conn = _open_connection()
+	'''conn = _open_connection()
 
 	process_vote(conn, Bill("Bill of Rights", "house", [("Will", 1),("Aga", 0),("Joe", 0),("Maxim", 1)], datetime.date.today()))
 	process_trade(conn, Trade("Will", "TSL", "buy", datetime.date.today()))
 	conflicts = get_votes_influenced_by_trades(conn, "Will")
 	print("Conflicts: ***REMOVED******REMOVED***".format(conflicts))
 
-	_close_connection(conn)
-
-
+	_close_connection(conn)'''
+	pass

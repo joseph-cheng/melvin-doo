@@ -1,5 +1,7 @@
 *.swp
+*.swo
 *~
+*.sql
 *.log
 *.csv
 /env/
