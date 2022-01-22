@@ -1,12 +1,22 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
+
+<!-- Compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+            
 <script src="script.js"></script>
 
 <html>
 <body>
-    Hello, world!
-    <div id="votesTable"></div>
 
-    <div id="tradesTable"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col" id="votesTable"></div>
+            <div class="col" id="tradesTable"></div>
+        </div>
+    </div>
 
 <script>
 let votesDiv = document.getElementById("votesTable");
