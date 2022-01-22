@@ -18,3 +18,7 @@ urllib3==1.26.8
 wsproto==1.0.0
 SQLAlchemy==1.4.31
 Flask-Migrate==3.1.0
+flask
+flask-cors
+python-dotenv
+Flask-SQLAlchemy
