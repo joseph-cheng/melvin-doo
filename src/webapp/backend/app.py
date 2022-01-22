@@ -4,12 +4,35 @@ from flask import request
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 import time
-import requests
 
 app = Flask(__name__)
 cors = CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = ''
 db = SQLAlchemy(app)
+
+@app.route('/get_stock_data', methods=['GET'])
+def get_stock_data():
+    ticker = request.args.get('ticker')
+    start_time = request.args.get('start')
+    end_time = request.args.get('end')
+
+    # TODO: actually get stock information
+
+    return {
+            'data': [
+                100,
+                105,
+                101,
+                115,
+                145,
+                125,
+                95,
+                85,
+                115,
+                105,
+                100,
+            ]
+           }
 
 @app.route('/get_congressperson_data', methods=['GET'])
 def get_congressperson_data():
