@@ -1,5 +1,11 @@
 # Melvin-Doo
 
+For Hack Cambridge Atlas
+
 ![Melvin Doo](/assets/images/melvindoo.png)
 
-# Hack Cambridge 2022
+## Requirements
+
+ - Scraper
+  - Selenium
+   - geckodriver

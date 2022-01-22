@@ -1,0 +1,38 @@
+.App ***REMOVED***
+  text-align: center;
+***REMOVED***
+
+.App-logo ***REMOVED***
+  height: 40vmin;
+  pointer-events: none;
+***REMOVED***
+
+@media (prefers-reduced-motion: no-preference) ***REMOVED***
+  .App-logo ***REMOVED***
+    animation: App-logo-spin infinite 20s linear;
+  ***REMOVED***
+***REMOVED***
+
+.App-header ***REMOVED***
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+***REMOVED***
+
+.App-link ***REMOVED***
+  color: #61dafb;
+***REMOVED***
+
+@keyframes App-logo-spin ***REMOVED***
+  from ***REMOVED***
+    transform: rotate(0deg);
+  ***REMOVED***
+  to ***REMOVED***
+    transform: rotate(360deg);
+  ***REMOVED***
+***REMOVED***
