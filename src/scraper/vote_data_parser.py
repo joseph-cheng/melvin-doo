@@ -27,6 +27,8 @@ class BillText:
     desc: str
 
 
+# ARGS: name - Name of congressman to be searched
+# RETURNS: Full name of congressman
 def convert_name(name: str) -> Optional[str]:
     url = f"https://www.congress.gov/search?q=%7B%22source%22%3A%22members%22%2C%22search%22%3A%22{name}%22%7D"
     r = requests.get(url)
@@ -71,10 +73,10 @@ def get_bill(bill_name: str) -> Bill:
         for row in reader:
             name, vote = row
             vote = int(vote)
-            # name = convert_name(name)
+            name = name_cache[name]
             votes[name] = vote
 
-    convert_all_names(votes)
+    # convert_all_names(votes)
 
     title_file = open(f"{data_path}/full_text/{bill_name}.txt", "r")
     title = title_file.readline()
@@ -83,7 +85,6 @@ def get_bill(bill_name: str) -> Bill:
     desc_file = open(f"{data_path}/summary/{bill_name}.txt", "r")
     desc = desc_file.readline()
     desc_file.close()
-
 
     return Bill(title, desc, house, votes)
 
@@ -107,14 +108,26 @@ def get_bill_text(bill_name: str) -> Optional[BillText]:
 # RETURN: List of objects with title and descriptions of each bill that has been voted on.
 def get_all_bill_text() -> List[BillText]:
     res = []
+    text_list = []
     for f in os.listdir(f"{data_path}/house_vote"):
-        res.append(get_bill_text(os.path.splitext(f)[0]))
+        t = get_bill_text(os.path.splitext(f)[0])
+        if t and hash(t.title) not in text_list:
+            res.append(t)
+            text_list.append(hash(t.title))
     for f in os.listdir(f"{data_path}/senate_vote"):
-        res.append(get_bill_text(os.path.splitext(f)[0]))
+        t = get_bill_text(os.path.splitext(f)[0])
+        if t and hash(t.title) not in text_list:
+            res.append(t)
+            text_list.append(hash(t.title))
     return res
 
 
 if __name__ == "__main__":
+    f = open("converted_names.csv")
+    name_cache = dict()
+    for line in f.readlines():
+        vals = line.split(":")
+        name_cache[vals[0]] = "".join(vals[1:])[:-1]
     b = get_bill("BILLS-112s307rfh")
     l = get_all_bill_text()
     print(b)
