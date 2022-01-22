@@ -19,3 +19,4 @@ wsproto==1.0.0
 flask
 flask-cors
 python-dotenv
+Flask-SQLAlchemy
