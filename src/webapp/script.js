@@ -1,3 +1,9 @@
+var _table_ = document.createElement('table'),
+  _tr_ = document.createElement('tr'),
+  _th_ = document.createElement('th'),
+  _td_ = document.createElement('td'),
+  _canvas_ = document.createElement('canvas');
+
 function getCongresspersonData(congressperson, votesDiv, tradesDiv) {
     fetch('http://localhost:5000/get_congressperson_data?name=' + congressperson).then((response) => {
             return response.json();
@@ -6,15 +12,60 @@ function getCongresspersonData(congressperson, votesDiv, tradesDiv) {
             votesDiv.appendChild(buildHtmlTable(response['votes']));
             tradesDiv.appendChild(buildHtmlTable(response['trades']));
         });
+}
 
+function getStockData(ticker, start, end, chartDiv) {
+    fetch('http://localhost:5000/get_stock_data?ticker=' + ticker + '?start=' + start + '?end=' + end).then((response) => {
+        return response.json();
+    }).then((response) => {
+        console.log(response);
+        buildChart(response['data'], start, end, chartCanvas);
+    });
+}
+
+function buildChart(data, start, end, chartCanvas) {
+    const ctx = chartCanvas.getContext('2d');
+    const newdata = makeArrWithZip(start, end, data.length, data);
+    const labels = makeArr(start, end, data.length);
+
+    const chartData = {
+        labels: labels,
+        datasets: [{
+            label: "Price",
+            data: newdata,
+            fill: false,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.0,
+        }]
+    };
+
+    const annotation = {
+        type: "line",
+        mode: "vertical",
+        scaleID: "x",
+        value: 30,
+        borderColor:"red",
+        borderWidth: 1,
+    };
+
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+            plugins: {
+                annotation: {
+                    annotations: {
+                        annotation
+                    }
+                }
+            }
+        }
+    });
 
 
 }
 
-var _table_ = document.createElement('table'),
-  _tr_ = document.createElement('tr'),
-  _th_ = document.createElement('th'),
-  _td_ = document.createElement('td');
+
 
 // Builds the HTML Table out of myList json data from Ivy restful service.
 function buildHtmlTable(arr) {
@@ -52,3 +103,22 @@ function addAllColumnHeaders(arr, table) {
   table.appendChild(tr);
   return columnSet;
 }
+
+function makeArr(startValue, stopValue, cardinality, data) {
+  var arr = [];
+  var step = (stopValue - startValue) / (cardinality - 1);
+  for (var i = 0; i < cardinality; i++) {
+    arr.push(startValue + (step * i));
+  }
+  return arr;
+}
+
+function makeArrWithZip(startValue, stopValue, cardinality, data) {
+  var arr = [];
+  var step = (stopValue - startValue) / (cardinality - 1);
+  for (var i = 0; i < cardinality; i++) {
+    arr.push({x: startValue + (step * i), y: data[i]});
+  }
+  return arr;
+}
+
