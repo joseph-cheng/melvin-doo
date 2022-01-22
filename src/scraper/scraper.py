@@ -22,8 +22,6 @@ def get_trades(driver):
     trades = []
     while not(finished):
         new_trades = get_trades_on_page(driver)
-        for row in new_trades:
-            print(row)
         trades += new_trades
         finished = not(get_next_page(driver))
 
@@ -48,7 +46,9 @@ def get_trades_on_page(driver):
         if counter == 10:
             pass
         else:
+
             text = ""
+
             inner_elements = element.find_elements_by_xpath(".//*")
             if len(inner_elements) > 0:
                 for inner_element in element.find_elements_by_xpath(".//*"):
@@ -69,17 +69,25 @@ def get_trades_on_page(driver):
 
 def get_next_page(driver):
 
-    next_page_button = driver.find_element_by_class_name("p-paginator-next")
+    next_page_button = None
+    while next_page_button == None:
+        next_page_button = driver.find_element_by_class_name("p-paginator-next")
+    print(next_page_button)
 
     button_classes = next_page_button.get_attribute("class").split()
 
+    print(get_next_page.i)
     if "p-disabled" in button_classes:
         return False
+
     else:
         next_page_button.click()
-        # lol
         time.sleep(1)
+        get_next_page.i += 1
+        # lol
         return True
+
+get_next_page.i = 0
 
 
 options = Options()
@@ -89,7 +97,7 @@ trades = get_trades(driver)
 with open("trades.csv", "w+") as f:
     for trade in trades:
         line = ",".join(trade)
-        trades.write(line + "\n")
+        f.write(line + "\n")
 
 
 driver.quit()
