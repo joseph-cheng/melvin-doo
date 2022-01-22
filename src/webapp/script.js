@@ -1,3 +1,9 @@
+var _table_ = document.createElement('table'),
+  _tr_ = document.createElement('tr'),
+  _th_ = document.createElement('th'),
+  _td_ = document.createElement('td'),
+  _canvas_ = document.createElement('canvas');
+
 function getCongresspersonData(congressperson, votesDiv, tradesDiv) ***REMOVED***
     fetch('http://localhost:5000/get_congressperson_data?name=' + congressperson).then((response) => ***REMOVED***
             return response.json();
@@ -6,15 +12,40 @@ function getCongresspersonData(congressperson, votesDiv, tradesDiv) ***REMOVED**
             votesDiv.appendChild(buildHtmlTable(response['votes']));
             tradesDiv.appendChild(buildHtmlTable(response['trades']));
         ***REMOVED***);
+***REMOVED***
 
+function getStockData(ticker, start, end, chartDiv) ***REMOVED***
+    fetch('http://localhost:5000/get_stock_data?ticker=' + ticker + '?start=' + start + '?end=' + end).then((response) => ***REMOVED***
+        return response.json();
+    ***REMOVED***).then((response) => ***REMOVED***
+        console.log(response);
+        buildChart(response['data'], start, end, chartCanvas);
+    ***REMOVED***);
+***REMOVED***
+
+function buildChart(data, start, end, chartCanvas) ***REMOVED***
+    const ctx = chartCanvas.getContext('2d');
+
+    const chartData = ***REMOVED***
+        labels: makeArr(start, end, data.length),
+        datasets: [***REMOVED***
+            label: "Price",
+            data: data,
+            fill: false,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1,
+        ***REMOVED***]
+    ***REMOVED***;
+
+    const chart = new Chart(ctx, ***REMOVED***
+        type: 'line',
+        data: chartData
+    ***REMOVED***);
 
 
 ***REMOVED***
 
-var _table_ = document.createElement('table'),
-  _tr_ = document.createElement('tr'),
-  _th_ = document.createElement('th'),
-  _td_ = document.createElement('td');
+
 
 // Builds the HTML Table out of myList json data from Ivy restful service.
 function buildHtmlTable(arr) ***REMOVED***
@@ -52,3 +83,13 @@ function addAllColumnHeaders(arr, table) ***REMOVED***
   table.appendChild(tr);
   return columnSet;
 ***REMOVED***
+
+function makeArr(startValue, stopValue, cardinality) ***REMOVED***
+  var arr = [];
+  var step = (stopValue - startValue) / (cardinality - 1);
+  for (var i = 0; i < cardinality; i++) ***REMOVED***
+    arr.push(startValue + (step * i));
+  ***REMOVED***
+  return arr;
+***REMOVED***
+
