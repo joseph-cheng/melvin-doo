@@ -59,7 +59,7 @@ with open("converted_joe_names.csv", "r") as f:
         line = line.strip().split(':')
         name_translations[line[0]]= line[1]
 
-conn = mysql._open_connection()
+conn = mysql.open_connection()
 names = set() 
 with open("../../scraper/trades.csv", "r") as f:
     for line in f.readlines():
@@ -77,7 +77,7 @@ with open("../../scraper/trades.csv", "r") as f:
         print(trade.date)
 
         mysql.process_trade(conn,trade)
-mysql._close_connection(conn)
+mysql.close_connection(conn)
 
 
 

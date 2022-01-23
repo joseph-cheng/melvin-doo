@@ -5,7 +5,19 @@ from flask_sqlalchemy import SQLAlchemy
 import datetime
 import time
 
-from src.scraper.stock_charts import get_stock_prices
+import os
+
+if os.environ['HOME'] == '/home/joe':
+    import mysql
+
+    import sys
+    sys.path.insert(0, "../../../")
+
+    from src.scraper.stock_charts import get_stock_prices
+else:
+    import src.webapp.backend.mysql
+    from src.scraper.stock_charts import get_stock_prices
+
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -27,7 +39,20 @@ def get_stock_data():
 
 @app.route('/get_congressperson_data', methods=['GET'])
 def get_congressperson_data():
+    conn = mysql.open_connection()
     congressperson_name = request.args.get('name')
+    query = f"SELECT persons.name, companies.company, trades.was_buy, trades.date FROM persons INNER JOIN trades ON (persons.ID = trades.person_ID) INNER JOIN companies ON (companies.ID = trades.company_ID) WHERE persons.name = '{congressperson_name}';"
+    result = mysql._execute_sql(conn, query)
+    mysql.close_connection(conn)
+
+    trades_array = []
+    for row in result:
+        trades_array.append({
+            "Name": row[0],
+            "Ticker": row[1],
+            "Buy/Sell": row[2],
+            "Date": row[3].strftime("%Y-%m-%d")
+            })
 
     # TODO: actually get data
 
@@ -44,15 +69,5 @@ def get_congressperson_data():
 
         ],
 
-        'trades': [
-            {
-                'test': 1,
-                'test2': 2,
-            },
-            {
-                'test': 1,
-                'test2': 2,
-            },
-
-        ]
+        'trades': trades_array
     }

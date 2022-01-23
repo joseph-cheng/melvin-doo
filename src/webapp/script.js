@@ -126,7 +126,7 @@ let displayTable = () => {
     let votesDiv = document.getElementById("votesTable");
     let tradesDiv = document.getElementById("tradesTable");
     let chartCanvas = document.getElementById("chartCanvas");
-    getCongresspersonData("testdata", votesDiv, tradesDiv);
+    getCongresspersonData("Representative Cole, Tom", votesDiv, tradesDiv);
 
     let start = new Date('August 19, 2019');
     let end = new Date('March 9, 2020');
