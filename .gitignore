@@ -10,3 +10,6 @@ long_term_bill_records/
 apikey.txt
 *credentials.json
 __pycache__/
+output.txt
+src/topic_labelling/bills_lbl2vec.py
+src/topic_labelling/test.txt
