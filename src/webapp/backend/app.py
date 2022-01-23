@@ -13,7 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = ''
 db = SQLAlchemy(app)
 
 
-@app.route('/stocks/', methods=['GET'])
+@app.route('/stocks', methods=['GET'])
 def get_stock_data():
     args = request.args
     ticker = request.args.get('ticker')
