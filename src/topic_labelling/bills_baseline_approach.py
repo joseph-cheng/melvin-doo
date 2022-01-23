@@ -1,4 +1,4 @@
-# our pre-defined categories = ***REMOVED***'oil', 'telecom', 'utilities', 'retail', 'health', 'real estate', 'precious metals', 'technology', 'finance', 'industrial', 'energy', 'materials'***REMOVED***
+# our pre-defined categories = {'oil', 'telecom', 'utilities', 'retail', 'health', 'real estate', 'precious metals', 'technology', 'finance', 'industrial', 'energy', 'materials'}
 import re
 import nltk
 from vote_data_parser_copy import get_all_bill_text, Bill
@@ -8,7 +8,7 @@ import nltk
 predefined_categories = ['oil', 'telecom', 'utilities', 'retail', 'health', 'real_estate', 'precious_metals', 'technology', 'finance', 'industrial', 'energy', 'materials']
 
 def find_similar_words():
-    broadened_category_lists = ***REMOVED******REMOVED***
+    broadened_category_lists = {}
     from nltk.corpus import wordnet as wn
     for predefined_category in predefined_categories:
         list = [predefined_category]
@@ -29,7 +29,7 @@ def find_similar_words():
 # broadened_category_lists = find_similar_words()
 
 # manually edited down categories - would be better to use a machine learning model to get these keywords ALONGSIDE manual annotation to categories
-broadened_category_lists = ***REMOVED***
+broadened_category_lists = {
      "other": ['education', 'educational', 'crime'],
      "oil": ['oil', 'petroleum', 'crude_oil', 'crude', 'fossil_oil', 'fuel'],
      "telecom": ['telecom', 'telecommunication', '4g', '5g', 'phone', 'telephone', 'communications'],
@@ -43,7 +43,7 @@ broadened_category_lists = ***REMOVED***
      "industrial": ['industrial', 'industry'],
      "energy": ['energy', 'coal', 'gas', 'solar', 'wind'],
      "materials": ['materials', 'material']
-***REMOVED***
+}
 
 def tokenise(text):
     regex = re.compile('[^a-zA-Z]')
@@ -58,16 +58,16 @@ def tokenise(text):
 billTextList = get_all_bill_text()
 
 def categorise_data(billTextList):
-    tokenisedBillTextList = ***REMOVED******REMOVED***
+    tokenisedBillTextList = {}
 
     for billText in billTextList:
         tokenisedBillTextList[billText.title] = tokenise(billText.desc)
 
-    billTitleCategorisationMap = ***REMOVED******REMOVED***
+    billTitleCategorisationMap = {}
 
     for billTitle in tokenisedBillTextList:
         #print(billTitle)
-        currentClassificationsCounts = ***REMOVED***
+        currentClassificationsCounts = {
         "other": 0, # put first in the case of a tie
         "oil": 0,
         "telecom": 0,
@@ -81,7 +81,7 @@ def categorise_data(billTextList):
         "industrial": 0,
         "energy": 0,
         "materials": 0
-    ***REMOVED***
+    }
         tokens = tokenisedBillTextList[billTitle]
         #print(tokens)
         for token in tokens:

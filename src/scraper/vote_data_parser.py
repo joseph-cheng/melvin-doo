@@ -32,12 +32,12 @@ class BillText:
 # ARGS: name - Name of congressman to be searched
 # RETURNS: Full name of congressman
 def convert_name(name: str) -> Optional[str]:
-    url = f"https://www.congress.gov/search?q=%7B%22source%22%3A%22members%22%2C%22search%22%3A%22***REMOVED***name***REMOVED***%22%7D"
+    url = f"https://www.congress.gov/search?q=%7B%22source%22%3A%22members%22%2C%22search%22%3A%22{name}%22%7D"
     r = requests.get(url)
 
     try:
         soup = BeautifulSoup(r.text, 'html.parser')
-        return soup.find("span", ***REMOVED***"class": "result-heading"***REMOVED***).a.text
+        return soup.find("span", {"class": "result-heading"}).a.text
     except Exception:
         print("error parsing name")
         return None
@@ -48,9 +48,9 @@ def convert_all_names(votes: Dict[str, int]):
     name_table = []
     for i, (name, _) in enumerate(votes.items()):
         new_name = convert_name(name)
-        name_table.append(f"***REMOVED***name***REMOVED***,***REMOVED***new_name***REMOVED***\n")
+        name_table.append(f"{name},{new_name}\n")
         if i % 10 == 0:
-            print(f"***REMOVED***(i * 100)/n***REMOVED***%")
+            print(f"{(i * 100)/n}%")
     f = open("converted_names.csv", "w")
     f.writelines(name_table)
     f.close()
@@ -62,12 +62,12 @@ def get_bill(bill_name: str, name_cache) -> Bill:
     votes = dict()
     house = ""
     votes_path = ""
-    if os.path.exists(f"***REMOVED***data_path***REMOVED***/house_vote/***REMOVED***bill_name***REMOVED***.csv"):
+    if os.path.exists(f"{data_path}/house_vote/{bill_name}.csv"):
         house = "HOUSE"
-        votes_path = f"***REMOVED***data_path***REMOVED***/house_vote/***REMOVED***bill_name***REMOVED***.csv"
-    elif os.path.exists(f"***REMOVED***data_path***REMOVED***/senate_vote/***REMOVED***bill_name***REMOVED***.csv"):
+        votes_path = f"{data_path}/house_vote/{bill_name}.csv"
+    elif os.path.exists(f"{data_path}/senate_vote/{bill_name}.csv"):
         house = "SENATE"
-        votes_path = f"***REMOVED***data_path***REMOVED***/senate_vote/***REMOVED***bill_name***REMOVED***.csv"
+        votes_path = f"{data_path}/senate_vote/{bill_name}.csv"
     else:
         print("Error: could not find file...")
     with open(votes_path, "r+") as f:
@@ -82,11 +82,11 @@ def get_bill(bill_name: str, name_cache) -> Bill:
 
     # convert_all_names(votes)
 
-    title_file = open(f"***REMOVED***data_path***REMOVED***/full_text/***REMOVED***bill_name***REMOVED***.txt", "r")
+    title_file = open(f"{data_path}/full_text/{bill_name}.txt", "r")
     title = title_file.readline()
     title_file.close()
 
-    desc_file = open(f"***REMOVED***data_path***REMOVED***/summary/***REMOVED***bill_name***REMOVED***.txt", "r")
+    desc_file = open(f"{data_path}/summary/{bill_name}.txt", "r")
     desc = desc_file.readline()
     print(desc)
     desc_file.close()
@@ -99,12 +99,12 @@ def get_bill(bill_name: str, name_cache) -> Bill:
 # ARGS: bill_name - filename of a bill, without the extension
 # RETURN: BillText object containing title and description of bill
 def get_bill_text(bill_name: str) -> Optional[BillText]:
-    title_file = open(f"***REMOVED***data_path***REMOVED***/full_text/***REMOVED***bill_name***REMOVED***.txt", "r")
+    title_file = open(f"{data_path}/full_text/{bill_name}.txt", "r")
     title = title_file.readline()
 
     # Some problems with dataset, so check that the summary exists
     try:
-        desc_file = open(f"***REMOVED***data_path***REMOVED***/summary/***REMOVED***bill_name***REMOVED***.txt", "r")
+        desc_file = open(f"{data_path}/summary/{bill_name}.txt", "r")
     except FileNotFoundError:
         return None
     desc = desc_file.readline()
@@ -116,12 +116,12 @@ def get_bill_text(bill_name: str) -> Optional[BillText]:
 def get_all_bill_text() -> List[BillText]:
     res = []
     text_list = []
-    for f in os.listdir(f"***REMOVED***data_path***REMOVED***/house_vote"):
+    for f in os.listdir(f"{data_path}/house_vote"):
         t = get_bill_text(os.path.splitext(f)[0])
         if t and hash(t.title) not in text_list:
             res.append(t)
             text_list.append(hash(t.title))
-    for f in os.listdir(f"***REMOVED***data_path***REMOVED***/senate_vote"):
+    for f in os.listdir(f"{data_path}/senate_vote"):
         t = get_bill_text(os.path.splitext(f)[0])
         if t and hash(t.title) not in text_list:
             res.append(t)
@@ -136,14 +136,14 @@ def get_all_bills():
         name_cache[vals[0]] = "".join(vals[1:])[:-1]
     res = []
     text_list = []
-    for f in os.listdir(f"***REMOVED***data_path***REMOVED***/house_vote"):
+    for f in os.listdir(f"{data_path}/house_vote"):
         t = get_bill(os.path.splitext(f)[0], name_cache)
         if t is None:
             continue
         if t and hash(t.title) not in text_list:
             res.append(t)
             text_list.append(hash(t.title))
-    for f in os.listdir(f"***REMOVED***data_path***REMOVED***/senate_vote"):
+    for f in os.listdir(f"{data_path}/senate_vote"):
         t = get_bill(os.path.splitext(f)[0], name_cache)
         if t is None:
             continue

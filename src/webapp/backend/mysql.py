@@ -53,87 +53,87 @@ def _execute_sql(conn, command):
 
 # Add a new person to the Persons table
 def _add_person(conn, name):
-	_execute_sql(conn, "INSERT INTO persons (name) VALUES ('***REMOVED******REMOVED***');".format(name))
+	_execute_sql(conn, "INSERT INTO persons (name) VALUES ('{}');".format(name))
 
 
 # Remove a person from the Persons table
 def _remove_person(conn, name):
-	_execute_sql(conn, "DELETE FROM persons WHERE name='***REMOVED******REMOVED***';".format(name))
+	_execute_sql(conn, "DELETE FROM persons WHERE name='{}';".format(name))
 
 
 # Add a new category to the Categories table
 def _add_category(conn, category):
-	_execute_sql(conn, "INSERT INTO categories (category) VALUES ('***REMOVED******REMOVED***');".format(category))
+	_execute_sql(conn, "INSERT INTO categories (category) VALUES ('{}');".format(category))
 
 
 # Remove a category from the Categories table
 def _remove_category(conn, category):
-	_execute_sql(conn, "DELETE FROM categories WHERE category='***REMOVED******REMOVED***';".format(category))
+	_execute_sql(conn, "DELETE FROM categories WHERE category='{}';".format(category))
 
 
 # Add a new bill to the Bills table
 def _add_bill(conn, bill, house):
-	_execute_sql(conn, "INSERT INTO bills (bill, house) VALUES ('***REMOVED***0***REMOVED***', '***REMOVED***1***REMOVED***');".format(bill, house))
+	_execute_sql(conn, "INSERT INTO bills (bill, house) VALUES ('{0}', '{1}');".format(bill, house))
 
 
 # Remove a bill from the Bills table
 def _remove_bill(conn, bill):
-	_execute_sql(conn, "DELETE FROM bills WHERE bill='***REMOVED******REMOVED***';".format(bill))
+	_execute_sql(conn, "DELETE FROM bills WHERE bill='{}';".format(bill))
 
 
 # Add a new company to the Companies table
 def _add_company(conn, company):
-	_execute_sql(conn, "INSERT INTO companies (company) VALUES ('***REMOVED******REMOVED***');".format(company))
+	_execute_sql(conn, "INSERT INTO companies (company) VALUES ('{}');".format(company))
 
 
 # Remove a company from the Companies table
 def _remove_company(conn, company):
-	_execute_sql(conn, "DELETE FROM companies WHERE company='***REMOVED******REMOVED***';".format(company))
+	_execute_sql(conn, "DELETE FROM companies WHERE company='{}';".format(company))
 
 
 # Add a new bill category pair to the BillCategories table
 def _add_bill_category(conn, billID, categoryID):
-	_execute_sql(conn, "INSERT INTO billcategories (bill_ID, category_ID) VALUES (***REMOVED***0***REMOVED***, ***REMOVED***1***REMOVED***);".format(billID, categoryID))
+	_execute_sql(conn, "INSERT INTO billcategories (bill_ID, category_ID) VALUES ({0}, {1});".format(billID, categoryID))
 
 
 # Remove a bill category pair from the BillCategories table
 def _remove_bill_category(conn, billID, categoryID):
-	_execute_sql(conn, "DELETE FROM billcategories WHERE bill_ID = ***REMOVED***0***REMOVED*** AND category_ID = ***REMOVED***1***REMOVED***;".format(billID, categoryID))
+	_execute_sql(conn, "DELETE FROM billcategories WHERE bill_ID = {0} AND category_ID = {1};".format(billID, categoryID))
 
 
 # Add a new company category pair to the CompanyCategory table
 def _add_company_category(conn, companyID, categoryID):
-	_execute_sql(conn, "INSERT INTO companycategories (company_ID, category_ID) VALUES (***REMOVED***0***REMOVED***, ***REMOVED***1***REMOVED***);".format(companyID, categoryID))
+	_execute_sql(conn, "INSERT INTO companycategories (company_ID, category_ID) VALUES ({0}, {1});".format(companyID, categoryID))
 
 
 # Remove a bill category pair from the BillCategories table
 def _remove_company_category(conn, companyID, categoryID):
-	_execute_sql(conn, "DELETE FROM companycategories WHERE company_ID = ***REMOVED***0***REMOVED*** AND category_ID = ***REMOVED***1***REMOVED***;".format(companyID, categoryID))
+	_execute_sql(conn, "DELETE FROM companycategories WHERE company_ID = {0} AND category_ID = {1};".format(companyID, categoryID))
 
 
 # Add a new trade to the Trades table
 def _add_trade(conn, personID, companyID, wasBuy, date):
-	_execute_sql(conn, "INSERT INTO trades (person_ID, company_ID, was_buy, date) VALUES (***REMOVED***0***REMOVED***, ***REMOVED***1***REMOVED***, '***REMOVED***2***REMOVED***', STR_TO_DATE('***REMOVED***3***REMOVED***', \"%Y-%m-%d\"));".format(personID, companyID, "buy" if wasBuy else "sell", date))
+	_execute_sql(conn, "INSERT INTO trades (person_ID, company_ID, was_buy, date) VALUES ({0}, {1}, '{2}', STR_TO_DATE('{3}', \"%Y-%m-%d\"));".format(personID, companyID, "buy" if wasBuy else "sell", date))
 
 
 # Remove a trade from the Trades table
 def _remove_trade(conn, personID, companyID, wasBuy, date):
-	_execute_sql(conn, "DELETE FROM trades WHERE person_ID = ***REMOVED***0***REMOVED*** AND company_ID = ***REMOVED***1***REMOVED*** AND was_buy = ***REMOVED***2***REMOVED*** AND date = ***REMOVED***3***REMOVED***;".format(personID, companyID, 1 if wasBuy else 0, date))
+	_execute_sql(conn, "DELETE FROM trades WHERE person_ID = {0} AND company_ID = {1} AND was_buy = {2} AND date = {3};".format(personID, companyID, 1 if wasBuy else 0, date))
 
 
 # Add a new vote to the Votes table
 def _add_vote(conn, personID, billID, votedFor, date):
-	_execute_sql(conn, "INSERT INTO votes (person_ID, bill_ID, voted_for, date) VALUES (***REMOVED***0***REMOVED***, ***REMOVED***1***REMOVED***, '***REMOVED***2***REMOVED***', STR_TO_DATE('***REMOVED***3***REMOVED***', \"%Y-%m-%d\"));".format(personID, billID, "for" if votedFor == 1 else "against" if votedFor == -1 else "abstain", date))
+	_execute_sql(conn, "INSERT INTO votes (person_ID, bill_ID, voted_for, date) VALUES ({0}, {1}, '{2}', STR_TO_DATE('{3}', \"%Y-%m-%d\"));".format(personID, billID, "for" if votedFor == 1 else "against" if votedFor == -1 else "abstain", date))
 
 
 # Remove a vote from the Votes table
 def _remove_vote(conn, personID, billID, votedFor, date):
-	_execute_sql(conn, "DELETE FROM votes WHERE person_ID = ***REMOVED***0***REMOVED*** AND bill_ID = ***REMOVED***1***REMOVED*** AND voted_for = ***REMOVED***2***REMOVED*** AND date = ***REMOVED***3***REMOVED***;".format(personID, billID, 1 if votedFor else 0, date))
+	_execute_sql(conn, "DELETE FROM votes WHERE person_ID = {0} AND bill_ID = {1} AND voted_for = {2} AND date = {3};".format(personID, billID, 1 if votedFor else 0, date))
 
 
 # Select all from a table
 def _select_all(conn, tableName):
-	return _execute_sql(conn, "SELECT * FROM ***REMOVED******REMOVED***;".format(tableName))
+	return _execute_sql(conn, "SELECT * FROM {};".format(tableName))
 
 
 def _get_query(conn, query):
@@ -141,7 +141,7 @@ def _get_query(conn, query):
 
 
 def _get_id(conn, table, column, value):
-	res = _get_query(conn, "SELECT ID FROM ***REMOVED***0***REMOVED*** WHERE ***REMOVED***1***REMOVED*** = '***REMOVED***2***REMOVED***';".format(table, column, value))
+	res = _get_query(conn, "SELECT ID FROM {0} WHERE {1} = '{2}';".format(table, column, value))
 	if len(res) == 0:
 		return None
 	return int(res[0][0])
@@ -229,7 +229,7 @@ def get_votes_influenced_by_trades(person, time_range=5):
 	person_id = _get_id(conn, "Persons", "name", person)
 
 	query = _get_initial_query_auxiliary()
-	query += " WHERE (Votes.person_ID = '***REMOVED******REMOVED***');".format(person_id)
+	query += " WHERE (Votes.person_ID = '{}');".format(person_id)
 
 	return _get_votes_auxiliary(conn, query, time_range)
 
@@ -241,7 +241,7 @@ def get_votes_influenced_by_trades_filtered_by_category(person, category, time_r
 	category_id = _get_id(conn, "Categories", "category", category)
 
 	query = _get_initial_query_auxiliary()
-	query += " WHERE (Votes.person_ID = '***REMOVED***0***REMOVED***' AND cat.ID = ***REMOVED***1***REMOVED***);".format(person_id, category_id)
+	query += " WHERE (Votes.person_ID = '{0}' AND cat.ID = {1});".format(person_id, category_id)
 
 	return _get_votes_auxiliary(conn, query, time_range)
 
@@ -277,10 +277,10 @@ def _get_votes_auxiliary(conn, query, time_range):
 
 		shared_category = result[9]
 
-		bill_name = _get_query(conn, "SELECT bill FROM bills WHERE id = ***REMOVED******REMOVED***;".format(bill_id))[0][0]
-		trade_company = _get_query(conn, "SELECT company FROM companies WHERE id = ***REMOVED******REMOVED***;".format(trade_company_id))[0][0]
+		bill_name = _get_query(conn, "SELECT bill FROM bills WHERE id = {};".format(bill_id))[0][0]
+		trade_company = _get_query(conn, "SELECT company FROM companies WHERE id = {};".format(trade_company_id))[0][0]
 
-		# print("Result: bill - ***REMOVED***0***REMOVED***, voted for - ***REMOVED***1***REMOVED***, date - ***REMOVED***2***REMOVED***, trade name - ***REMOVED***3***REMOVED***, type - ***REMOVED***4***REMOVED***, date - ***REMOVED***5***REMOVED***, category - ***REMOVED***6***REMOVED***".format(bill_name, bill_voted_for, bill_date, trade_company, trade_was_buy, trade_date, shared_category))
+		# print("Result: bill - {0}, voted for - {1}, date - {2}, trade name - {3}, type - {4}, date - {5}, category - {6}".format(bill_name, bill_voted_for, bill_date, trade_company, trade_was_buy, trade_date, shared_category))
 		conflicts.append(
 			(bill_name, bill_voted_for, bill_date, trade_company, trade_was_buy, trade_date, shared_category))
 
@@ -295,7 +295,7 @@ if __name__ == "__main__":
 	process_vote(conn, Bill("Bill of Rights", "house", [("Will", 1),("Aga", 0),("Joe", 0),("Maxim", 1)], datetime.date.today()))
 	process_trade(conn, Trade("Will", "TSL", "buy", datetime.date.today()))
 	conflicts = get_votes_influenced_by_trades(conn, "Will")
-	print("Conflicts: ***REMOVED******REMOVED***".format(conflicts))
+	print("Conflicts: {}".format(conflicts))
 
 	_close_connection(conn)'''
 	pass

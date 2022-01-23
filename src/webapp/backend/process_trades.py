@@ -12,7 +12,7 @@ class Trade:
         self.date = date
 
     def __repr__(self):
-        return f"***REMOVED***self.person***REMOVED*** | ***REMOVED***self.ticker***REMOVED*** | ***REMOVED***self.buy_or_sell***REMOVED*** | ***REMOVED***self.date***REMOVED***"
+        return f"{self.person} | {self.ticker} | {self.buy_or_sell} | {self.date}"
 
 
 
@@ -28,12 +28,12 @@ def process_line(line):
     return trade
 
 def convert_name(name):
-    url = f"https://www.congress.gov/search?q=%7B%22source%22%3A%22members%22%2C%22search%22%3A%22***REMOVED***name***REMOVED***%22%7D"
+    url = f"https://www.congress.gov/search?q=%7B%22source%22%3A%22members%22%2C%22search%22%3A%22{name}%22%7D"
     r = requests.get(url)
 
     try:
         soup = BeautifulSoup(r.text, 'html.parser')
-        return soup.find("span", ***REMOVED***"class": "result-heading"***REMOVED***).a.text
+        return soup.find("span", {"class": "result-heading"}).a.text
     except Exception:
         print(name)
         print("error parsing name")
@@ -46,14 +46,14 @@ def convert_all_names(names):
     for i, name in enumerate(names):
         new_name = convert_name(name)
         if new_name is not None:
-            name_table.append(f"***REMOVED***name***REMOVED***:***REMOVED***new_name***REMOVED***\n")
+            name_table.append(f"{name}:{new_name}\n")
         if i % 10 == 0:
-            print(f"***REMOVED***(i * 100)/n***REMOVED***%")
+            print(f"{(i * 100)/n}%")
     f = open("converted_joe_names.csv", "w+")
     f.writelines(name_table)
     f.close()
 
-name_translations = ***REMOVED******REMOVED***
+name_translations = {}
 with open("converted_joe_names.csv", "r") as f:
     for line in f.readlines():
         line = line.strip().split(':')

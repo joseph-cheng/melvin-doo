@@ -6,7 +6,7 @@ def get_ticker_categories():
 
     categories = []
 
-    etfs = ***REMOVED***
+    etfs = {
             "XLE": "energy",
             "XLF": "finance",
             "XLU": "utilities",
@@ -32,17 +32,17 @@ def get_ticker_categories():
             "KBE": "finance",
             "KRE": "finance",
             "XTL": "telecom",
-    ***REMOVED***
+    }
 
-    company_categories = ***REMOVED******REMOVED***
+    company_categories = {}
 
     url = "https://www.marketwatch.com/investing/fund/%s/holdings"
 
     for etf in etfs:
         r = requests.get(url % etf)
         soup = BeautifulSoup(r.text, 'html.parser')
-        holdings = soup.find("div", ***REMOVED***"class":"holdings"***REMOVED***)
-        tickers = holdings.find_all('td', ***REMOVED***"class": "u-semi"***REMOVED***)
+        holdings = soup.find("div", {"class":"holdings"})
+        tickers = holdings.find_all('td', {"class": "u-semi"})
         for ticker in tickers:
             text = ticker.getText()
             if len(text.strip()) > 0 and text.upper() == text:
