@@ -39,11 +39,11 @@ def get_stock_data():
 
 @app.route('/get_congressperson_data', methods=['GET'])
 def get_congressperson_data():
-    conn = mysql._open_connection()
+    conn = mysql.open_connection()
     congressperson_name = request.args.get('name')
     query = f"SELECT persons.name, companies.company, trades.was_buy, trades.date FROM persons INNER JOIN trades ON (persons.ID = trades.person_ID) INNER JOIN companies ON (companies.ID = trades.company_ID) WHERE persons.name = '***REMOVED***congressperson_name***REMOVED***';"
     result = mysql._execute_sql(conn, query)
-    mysql._close_connection(conn)
+    mysql.close_connection(conn)
 
     trades_array = []
     for row in result:

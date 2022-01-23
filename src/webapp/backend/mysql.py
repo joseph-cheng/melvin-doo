@@ -2,6 +2,16 @@ import pymysql
 import datetime
 import companies_scraper
 
+'''
+Useful methods:
+	- _open_connection() - open up a connection to the database, returns the connection
+	- _close_connection(conn) - saves and closes the connection to the database
+	- get_votes_influenced_by_trades(person, time_range=5) - return a list of conflicts between trades and votes by a given person
+	- get_votes_influenced_by_trades_filtered_by_category(person, category, time_range=5) - return a list of conflicts between trades and votes by a given person for a given category
+'''
+# Useful methods:
+
+
 
 class Bill:
 	def __init__(self, title, house, votes, date):
@@ -19,7 +29,7 @@ class Trade:
 		self.date = date
 
 
-def _open_connection():
+def open_connection():
 	conn = pymysql.connect(
 		host='localhost',
 		user='user',
@@ -30,7 +40,7 @@ def _open_connection():
 	return conn
 
 
-def _close_connection(conn):
+def close_connection(conn):
 	conn.commit()
 	conn.close()
 
@@ -211,22 +221,44 @@ def fill_tickers_and_categories(conn):
 			_add_company_category(conn, ticker_id, category_id)
 
 
-def get_votes_influenced_by_trades(conn, person, time_range=5):
+def get_votes_influenced_by_trades(person, time_range=5):
+	conn = open_connection()
 
-	conflicts = []
+	person_id = _get_id(conn, "Persons", "name", person)
 
-	personID = _get_id(conn, "Persons", "name", person)
+	query = _get_initial_query_auxiliary()
+	query += " WHERE (Votes.person_ID = '***REMOVED******REMOVED***');".format(person_id)
 
+	return _get_votes_auxiliary(conn, query, time_range)
+
+
+def get_votes_influenced_by_trades_filtered_by_category(person, category, time_range=5):
+	conn = open_connection()
+
+	person_id = _get_id(conn, "Persons", "name", person)
+	category_id = _get_id(conn, "Categories", "category", category)
+
+	query = _get_initial_query_auxiliary()
+	query += " WHERE (Votes.person_ID = '***REMOVED***0***REMOVED***' AND cat.ID = ***REMOVED***1***REMOVED***);".format(person_id, category_id)
+
+	return _get_votes_auxiliary(conn, query, time_range)
+
+
+def _get_initial_query_auxiliary():
 	query = "SELECT *, DATEDIFF(Votes.date, Trades.date) AS difference FROM Votes"
 	query += " INNER JOIN BillCategories AS bc ON bc.bill_ID = Votes.bill_ID"
 	query += " INNER JOIN Categories AS cat ON cat.ID = bc.category_ID"
 	query += " INNER JOIN Trades ON Trades.person_ID = Votes.person_ID"
 	query += " INNER JOIN CompanyCategories AS cc ON (cc.company_ID = Trades.company_ID AND cc.category_ID = cat.ID)"
-	query += " WHERE (Votes.person_ID = '***REMOVED******REMOVED***');".format(personID)
+	return query
+
+
+def _get_votes_auxiliary(conn, query, time_range):
+	conflicts = []
 
 	res = _get_query(conn, query)
 
-	for result in res: # 0=vote id, 1=person id, 2=bill id, 3=was for, 4=bill date, 5=bill category id, 6=bill id, 7=category id, 8=category id, 9=category, 10=trade id, 11=person id, 12=company id
+	for result in res:  # 0=vote id, 1=person id, 2=bill id, 3=was for, 4=bill date, 5=bill category id, 6=bill id, 7=category id, 8=category id, 9=category, 10=trade id, 11=person id, 12=company id
 		# 13=was_buy, 14=trade date, 15=company category id, 16=company id, 17=category id, 18=date diff
 
 		if result[18] > time_range:
@@ -246,8 +278,11 @@ def get_votes_influenced_by_trades(conn, person, time_range=5):
 		bill_name = _get_query(conn, "SELECT bill FROM bills WHERE id = ***REMOVED******REMOVED***;".format(bill_id))[0][0]
 		trade_company = _get_query(conn, "SELECT company FROM companies WHERE id = ***REMOVED******REMOVED***;".format(trade_company_id))[0][0]
 
-		#print("Result: bill - ***REMOVED***0***REMOVED***, voted for - ***REMOVED***1***REMOVED***, date - ***REMOVED***2***REMOVED***, trade name - ***REMOVED***3***REMOVED***, type - ***REMOVED***4***REMOVED***, date - ***REMOVED***5***REMOVED***, category - ***REMOVED***6***REMOVED***".format(bill_name, bill_voted_for, bill_date, trade_company, trade_was_buy, trade_date, shared_category))
-		conflicts.append((bill_name, bill_voted_for, bill_date, trade_company, trade_was_buy, trade_date, shared_category))
+		# print("Result: bill - ***REMOVED***0***REMOVED***, voted for - ***REMOVED***1***REMOVED***, date - ***REMOVED***2***REMOVED***, trade name - ***REMOVED***3***REMOVED***, type - ***REMOVED***4***REMOVED***, date - ***REMOVED***5***REMOVED***, category - ***REMOVED***6***REMOVED***".format(bill_name, bill_voted_for, bill_date, trade_company, trade_was_buy, trade_date, shared_category))
+		conflicts.append(
+			(bill_name, bill_voted_for, bill_date, trade_company, trade_was_buy, trade_date, shared_category))
+
+	close_connection(conn)
 
 	return conflicts
 
