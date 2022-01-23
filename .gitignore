@@ -6,9 +6,9 @@
 *.csv
 /env/
 .idea/
-/long_term_bill_records/
+long_term_bill_records/
 apikey.txt
-/src/scraper/credentials.json
+credentials.json
 __pycache__/
 output.txt
 src/topic_labelling/bills_lbl2vec.py

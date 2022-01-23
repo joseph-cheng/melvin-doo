@@ -1,6 +1,7 @@
 import pymysql
 import datetime
 import companies_scraper
+import bills_baseline_approach
 
 '''
 Useful methods:
@@ -9,11 +10,8 @@ Useful methods:
 	- get_votes_influenced_by_trades(person, time_range=5) - return a list of conflicts between trades and votes by a given person
 	- get_votes_influenced_by_trades_filtered_by_category(person, category, time_range=5) - return a list of conflicts between trades and votes by a given person for a given category
 '''
-# Useful methods:
 
-
-
-class Bill:
+'''class Bill:
 	def __init__(self, title, house, votes, date):
 		self.title = title
 		self.house = house
@@ -26,7 +24,7 @@ class Trade:
 		self.person = person
 		self.ticker = ticker
 		self.buy_or_sell = buy_or_sell
-		self.date = date
+		self.date = date'''
 
 
 def open_connection():
@@ -123,7 +121,7 @@ def _remove_trade(conn, personID, companyID, wasBuy, date):
 
 # Add a new vote to the Votes table
 def _add_vote(conn, personID, billID, votedFor, date):
-	_execute_sql(conn, "INSERT INTO votes (person_ID, bill_ID, voted_for, date) VALUES ({0}, {1}, {2}, {3});".format(personID, billID, "for" if votedFor else "against", date))
+	_execute_sql(conn, "INSERT INTO votes (person_ID, bill_ID, voted_for, date) VALUES ({0}, {1}, '{2}', STR_TO_DATE('{3}', \"%Y-%m-%d\"));".format(personID, billID, "for" if votedFor == 1 else "against" if votedFor == -1 else "abstain", date))
 
 
 # Remove a vote from the Votes table
@@ -149,9 +147,9 @@ def _get_id(conn, table, column, value):
 
 def process_vote(conn, bill):
 	# Extract variables from bill
-	title = bill.title
+	title = bill.desc
 	house = bill.house
-	categories = ["defence", "housing"] #bill.categories
+	categories = bill.categories
 	votes = bill.votes
 	date = datetime.date.today()
 
@@ -169,12 +167,14 @@ def process_vote(conn, bill):
 		_add_bill_category(conn, billID, categoryID)
 
 	# Create a vote entry for each person voting on this bill
-	for person, vote in votes:
+	for person in votes:
+		vote = votes[person]
 		personID = _get_id(conn, "persons", "name", person)
 		if personID is None:
 			_add_person(conn, person)
 			personID = _get_id(conn, "persons", "name", person)
-		voted_for = vote == 1
+		voted_for = vote 
+		date = bill.date
 		_add_vote(conn, personID, billID, voted_for, date)
 
 
@@ -200,34 +200,13 @@ def process_trade(conn, trade):
 	_add_trade(conn, personID, tickerID, buy_or_sell, date)
 
 
-def fill_tickers_and_categories(conn):
-	pairs = companies_scraper.get_ticker_categories()
-
-	for company, categories in pairs:
-		# Get the ticker ID (or add to Companies if a new ticker)
-		ticker_id = _get_id(conn, "companies", "company", company)
-		if ticker_id is None:
-			_add_company(conn, company)
-			ticker_id = _get_id(conn, "companies", "company", company)
-
-		for category in categories:
-
-			category_id = _get_id(conn, "categories", "category", category)
-			if category_id is None:
-				# Have found a new category so add it to Categories
-				_add_category(conn, category)
-				category_id = _get_id(conn, "categories", "category", category)
-
-			_add_company_category(conn, ticker_id, category_id)
-
-
 def get_votes_influenced_by_trades(person, time_range=5):
 	conn = open_connection()
 
-	person_id = _get_id(conn, "Persons", "name", person)
+	person_id = _get_id(conn, "persons", "name", person)
 
 	query = _get_initial_query_auxiliary()
-	query += " WHERE (Votes.person_ID = '{}');".format(person_id)
+	query += " WHERE (votes.person_ID = '{}');".format(person_id)
 
 	return _get_votes_auxiliary(conn, query, time_range)
 
@@ -235,21 +214,21 @@ def get_votes_influenced_by_trades(person, time_range=5):
 def get_votes_influenced_by_trades_filtered_by_category(person, category, time_range=5):
 	conn = open_connection()
 
-	person_id = _get_id(conn, "Persons", "name", person)
-	category_id = _get_id(conn, "Categories", "category", category)
+	person_id = _get_id(conn, "persons", "name", person)
+	category_id = _get_id(conn, "categories", "category", category)
 
 	query = _get_initial_query_auxiliary()
-	query += " WHERE (Votes.person_ID = '{0}' AND cat.ID = {1});".format(person_id, category_id)
+	query += " WHERE (votes.person_ID = '{0}' AND cat.ID = {1});".format(person_id, category_id)
 
 	return _get_votes_auxiliary(conn, query, time_range)
 
 
 def _get_initial_query_auxiliary():
-	query = "SELECT *, DATEDIFF(Votes.date, Trades.date) AS difference FROM Votes"
-	query += " INNER JOIN BillCategories AS bc ON bc.bill_ID = Votes.bill_ID"
-	query += " INNER JOIN Categories AS cat ON cat.ID = bc.category_ID"
-	query += " INNER JOIN Trades ON Trades.person_ID = Votes.person_ID"
-	query += " INNER JOIN CompanyCategories AS cc ON (cc.company_ID = Trades.company_ID AND cc.category_ID = cat.ID)"
+	query = "SELECT *, DATEDIFF(votes.date, trades.date) AS difference FROM votes"
+	query += " INNER JOIN billcategories AS bc ON bc.bill_ID = votes.bill_ID"
+	query += " INNER JOIN categories AS cat ON cat.ID = bc.category_ID"
+	query += " INNER JOIN trades ON trades.person_ID = votes.person_ID"
+	query += " INNER JOIN companycategories AS cc ON (cc.company_ID = trades.company_ID AND cc.category_ID = cat.ID)"
 	return query
 
 
@@ -287,13 +266,65 @@ def _get_votes_auxiliary(conn, query, time_range):
 	return conflicts
 
 
+def push_bill_categories_to_db():
+	conn = open_connection()
+
+	billTitleCategorisationMap = bills_baseline_approach.categorise_data(bills_baseline_approach.billTextList)
+	print(billTitleCategorisationMap)
+
+	for key in billTitleCategorisationMap:
+		# add category to map if not in already
+		category = billTitleCategorisationMap[key]
+		category_id = _get_id(conn, "categories", "category", category)
+		if category_id is None:
+			# Have found a new category so add it to Categories
+			_add_category(conn, category)
+			category_id = _get_id(conn, "categories", "category", category)
+
+		bill_id = _get_id(conn, "bills", "bill", key)
+		if bill_id is None:
+			_add_bill(conn, key, "unknown")
+			bill_id = _get_id(conn, "bills", "bill", key)
+
+		if len(_get_query(conn, "SELECT * FROM billcategories WHERE bill_id = {0} AND category_id = {1};".format(bill_id, category_id)))>0:
+			continue
+
+		_add_bill_category(conn, bill_id, category)
+
+
+	close_connection(conn)
+
+
+def push_tickers_and_categories():
+	conn = open_connection()
+
+	pairs = companies_scraper.get_ticker_categories()
+
+	for company, categories in pairs:
+		# Get the ticker ID (or add to Companies if a new ticker)
+		ticker_id = _get_id(conn, "companies", "company", company)
+		if ticker_id is None:
+			_add_company(conn, company)
+			ticker_id = _get_id(conn, "companies", "company", company)
+
+		for category in categories:
+
+			category_id = _get_id(conn, "categories", "category", category)
+			if category_id is None:
+				# Have found a new category so add it to Categories
+				_add_category(conn, category)
+				category_id = _get_id(conn, "categories", "category", category)
+
+			if len(_get_query(conn,
+							  "SELECT * FROM companycategories WHERE company_id = {0} AND category_id = {1};".format(ticker_id,
+																											   category_id))) > 0:
+				continue
+
+			_add_company_category(conn, ticker_id, category_id)
+
+	close_connection(conn)
+
+
 if __name__ == "__main__":
-	'''conn = _open_connection()
-
-	process_vote(conn, Bill("Bill of Rights", "house", [("Will", 1),("Aga", 0),("Joe", 0),("Maxim", 1)], datetime.date.today()))
-	process_trade(conn, Trade("Will", "TSL", "buy", datetime.date.today()))
-	conflicts = get_votes_influenced_by_trades(conn, "Will")
-	print("Conflicts: {}".format(conflicts))
-
-	_close_connection(conn)'''
-	pass
+	push_bill_categories_to_db()
+	push_tickers_and_categories()
