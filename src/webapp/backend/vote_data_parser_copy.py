@@ -10,7 +10,11 @@ from selenium.webdriver.firefox.options import Options
 
 from bs4 import BeautifulSoup
 
-data_path = "melvin-doo/long_term_bill_records"
+import pathlib
+print("")
+print(pathlib.Path(__file__))
+
+data_path = "../../scraper/long_term_bill_records"
 
 
 @dataclass

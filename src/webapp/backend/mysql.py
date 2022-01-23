@@ -289,7 +289,7 @@ def push_bill_categories_to_db():
 		if len(_get_query(conn, "SELECT * FROM billcategories WHERE bill_id = {0} AND category_id = {1};".format(bill_id, category_id)))>0:
 			continue
 
-		_add_bill_category(conn, bill_id, category)
+		_add_bill_category(conn, bill_id, category_id)
 
 
 	close_connection(conn)
@@ -326,5 +326,8 @@ def push_tickers_and_categories():
 
 
 if __name__ == "__main__":
+	'''print("Pushing bill categories")
 	push_bill_categories_to_db()
-	push_tickers_and_categories()
+	print("Pushing ticker categories")
+	push_tickers_and_categories()'''
+	pass
