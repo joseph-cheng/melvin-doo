@@ -51,42 +51,26 @@ def get_members_list():
     return names
 
 
-@app.route('/get_congressperson_data', methods=['GET'])
+@app.route('/get_congressperson_bills', methods=['GET'])
 def get_congressperson_data():
-    # conn = mysql.open_connection()
-    # congressperson_name = request.args.get('name')
-    # trades_query = f"SELECT persons.name, companies.company, trades.was_buy, trades.date FROM persons INNER JOIN trades ON (persons.ID = trades.person_ID) INNER JOIN companies ON (companies.ID = trades.company_ID) WHERE persons.name = '{congressperson_name}';"
-    # trades_result = mysql._execute_sql(conn, trades_query)
-    #
-    # votes_query = f"SELECT persons.name, bills.bill, votes.voted_for FROM persons INNER JOIN votes ON (persons.ID = votes.person_ID) INNER JOIN bills on (bills.ID = votes.bill_ID) WHERE persons.name = '{congressperson_name}';"
-    # votes_result = mysql._execute_sql(conn, votes_query)
-    # mysql.close_connection(conn)
-    #
-    # trades_array = []
-    # for row in trades_result:
-    #     trades_array.append({
-    #         "Name": row[0],
-    #         "Ticker": row[1],
-    #         "Buy/Sell": row[2],
-    #         "Date": row[3].strftime("%Y-%m-%d")
-    #         })
-    #
-    # votes_array = []
-    # for row in votes_result:
-    #     votes_array.append({
-    #         "Name": row[0],
-    #         "Bill": row[1][:128],
-    #         "For/Against": row[2]
-    #         })
+    conn = mysql.open_connection()
+    congressperson_name = request.args.get('name')
+   
+    votes_query = f"SELECT persons.name, bills.ID, bills.bill, votes.voted_for, categories.category FROM persons INNER JOIN votes ON (persons.ID = votes.person_ID) INNER JOIN bills on (bills.ID = votes.bill_ID) INNER JOIN trades on (persons.ID = trades.person_id) INNER JOIN companycategories ON (companycategories.company_ID = trades.company_ID) INNER JOIN billcategories ON (billcategories.bill_ID = bills.ID) INNER JOIN categories on (categories.ID = billcategories.bill_ID) WHERE persons.name = '{congressperson_name}' AND companycategories.category_ID = billcategories.category_ID;"
+    votes_result = mysql._execute_sql(conn, votes_query)
+    mysql.close_connection(conn)
+   
+    votes_array = []
+    for row in votes_result:
+        votes_array.append({
+            "Name": row[0],
+            "Bill ID": row[1],
+            "Bill": row[2][:128],
+            "For/Against": row[3],
+            "Category": row[4],
+            })
 
-    trades_array = [{"Name": "John", "Ticker": "GOOG", "Buy/Sell": "BUY", "Date": datetime.datetime(2019, 10, 15)},
-                    {"Name": "Alice", "Ticker": "TSLA", "Buy/Sell": "SELL", "Date": datetime.datetime(2020, 1, 13)}]
-
-    votes_array = [{"Name": "John", "Bill": "Bombing Iraq", "For/Against": "FOR"},
-                    {"Name": "Alice", "Bill": "Burning down the Amazon", "For/Against": "FOR"}]
 
     return {
         'votes': votes_array,
-
-        'trades': trades_array,
     }

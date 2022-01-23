@@ -16,12 +16,12 @@ function getNames() {
 
 // TODO: remove get prefix & make consistent with above endpoint
 function getCongresspersonData(congressperson, votesDiv, tradesDiv) {
-    fetch('http://localhost:5000/get_congressperson_data?name=' + congressperson).then((response) => {
+    fetch('http://localhost:5000/get_congressperson_bills?name=' + congressperson).then((response) => {
         return response.json();
     }).then((response) => {
         console.log(response);
         votesDiv.appendChild(buildVotesTable(response['votes']));
-        tradesDiv.appendChild(buildTradesTable(response['trades']));
+        //tradesDiv.appendChild(buildTradesTable(response['trades']));
     });
 }
 
