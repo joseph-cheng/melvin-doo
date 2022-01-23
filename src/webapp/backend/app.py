@@ -66,9 +66,11 @@ def get_members_list():
 def get_congressperson_data():
     conn = mysql.open_connection()
     congressperson_name = request.args.get('name')
+    congressperson_name = "Representative Pelosi, Nancy"
    
-    votes_query = f"SELECT DISTINCT persons.name, bills.ID, votes.voted_for, categories.category FROM votes INNER JOIN bills ON bills.ID = votes.bill_ID INNER JOIN billcategories as bc ON bc.bill_ID = votes.bill_ID INNER JOIN categories ON categories.ID = bc.category_ID INNER JOIN persons on persons.ID = votes.person_ID INNER JOIN companycategories as cc on cc.category_ID = bc.category_ID INNER JOIN trades ON trades.company_ID = cc.company_ID WHERE trades.person_ID = votes.person_ID AND persons.name = '{congressperson_name}';"
+    votes_query = f"SELECT DISTINCT persons.name, bills.bill, bills.ID, votes.voted_for, categories.category FROM votes INNER JOIN bills ON bills.ID = votes.bill_ID INNER JOIN billcategories as bc ON bc.bill_ID = votes.bill_ID INNER JOIN categories ON categories.ID = bc.category_ID INNER JOIN persons on persons.ID = votes.person_ID INNER JOIN companycategories as cc on cc.category_ID = bc.category_ID INNER JOIN trades ON trades.company_ID = cc.company_ID WHERE trades.person_ID = votes.person_ID AND persons.name = '{congressperson_name}';"
     votes_result = mysql._execute_sql(conn, votes_query)
+    print(votes_result)
     mysql.close_connection(conn)
 
     votes_array = []
