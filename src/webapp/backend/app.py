@@ -4,6 +4,7 @@ from flask import request
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 import time
+import mysql
 
 import os
 
@@ -23,7 +24,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = ''
 db = SQLAlchemy(app)
 
 
-@app.route('/stocks/', methods=['GET'])
+@app.route('/stocks', methods=['GET'])
 def get_stock_data():
     args = request.args
     ticker = request.args.get('ticker')
@@ -35,13 +36,24 @@ def get_stock_data():
     return ***REMOVED***'data': get_stock_prices(ticker, start, end)***REMOVED***
 
 
+# Returns list of names (for autocomplete)
+@app.route('/members', methods=['GET'])
+def get_members_list():
+    f = open("src/webapp/backend/names.txt", "r")
+    names = dict()
+    for name in f.readlines():
+        name = name[:-1]
+        names[name] = None
+    return names
+
+
 @app.route('/get_congressperson_data', methods=['GET'])
 def get_congressperson_data():
-    conn = mysql._open_connection()
+    conn = mysql.open_connection()
     congressperson_name = request.args.get('name')
     query = f"SELECT persons.name, companies.company, trades.was_buy, trades.date FROM persons INNER JOIN trades ON (persons.ID = trades.person_ID) INNER JOIN companies ON (companies.ID = trades.company_ID) WHERE persons.name = '***REMOVED***congressperson_name***REMOVED***';"
     result = mysql._execute_sql(conn, query)
-    mysql._close_connection(conn)
+    mysql.close_connection(conn)
 
     trades_array = []
     for row in result:
