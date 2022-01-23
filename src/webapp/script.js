@@ -20,8 +20,8 @@ function getCongresspersonData(congressperson, votesDiv, tradesDiv) {
         return response.json();
     }).then((response) => {
         console.log(response);
-        votesDiv.appendChild(buildHtmlTable(response['votes']));
-        tradesDiv.appendChild(buildHtmlTable(response['trades']));
+        votesDiv.appendChild(buildVotesTable(response['votes']));
+        tradesDiv.appendChild(buildTradesTable(response['trades']));
     });
 }
 
@@ -76,7 +76,27 @@ function buildChart(data, start, end, chartCanvas) {
 
 
 // Builds the HTML Table out of myList json data from Ivy restful service.
-function buildHtmlTable(arr) {
+function buildVotesTable(arr) {
+    let table = _table_.cloneNode(false),
+        columns = addAllColumnHeaders(arr, table);
+    for (let i = 0, maxi = arr.length; i < maxi; ++i) {
+        let tr = _tr_.cloneNode(false);
+        // let a = document.createElement("a");
+        tr.addEventListener("click", () => { console.log(`clicked ${i}`) })
+        tr.classList.add("vote-row")
+        // tr.appendChild(a);
+        for (let j = 0, maxj = columns.length; j < maxj; ++j) {
+            let td = _td_.cloneNode(false);
+            cellValue = arr[i][columns[j]];
+            td.appendChild(document.createTextNode(arr[i][columns[j]] || ''));
+            tr.appendChild(td);
+        }
+        table.appendChild(tr);
+    }
+    return table;
+}
+
+function buildTradesTable(arr) {
     let table = _table_.cloneNode(false),
         columns = addAllColumnHeaders(arr, table);
     for (let i = 0, maxi = arr.length; i < maxi; ++i) {
