@@ -8,11 +8,18 @@ import mysql
 
 import os
 
-if os.environ['HOME'] == '/home/joe':
-    import mysql
+if 'HOME' in os.environ.keys():
+    if os.environ['HOME'] == '/home/joe':
+        import mysql
 
-    import sys
-    sys.path.insert(0, "../../../")
+        import sys
+        sys.path.insert(0, "../../../")
+elif 'HOMEPATH' in os.environ.keys():
+    if os.environ['HOMEPATH'] == '\\Users\\Aga':
+        import mysql
+
+        import sys
+        sys.path.insert(0, "../../../")
 else:
     import src.webapp.backend.mysql
 from src.scraper.stock_charts import get_stock_prices
@@ -40,8 +47,12 @@ def get_stock_data():
 @app.route('/members', methods=['GET'])
 def get_members_list():
     f = None
-    if os.environ["HOME"] == "/home/joe":
-        f = open("names.txt", "r")
+    if 'HOME' in os.environ.keys():
+        if os.environ["HOME"] == "/home/joe":
+            f = open("names.txt", "r")
+    elif 'HOMEPATH' in os.environ.keys():
+        if os.environ['HOMEPATH'] == '\\Users\\Aga':
+            f = open("names.txt", "r")
     else:
         f = open("src/webapp/backend/names.txt", "r")
     names = dict()
