@@ -97,14 +97,15 @@ def get_congressperson_data():
 def get_trades():
     args = request.args
     bill_id = request.args.get('bill_id')
-    person_id = request.args.get('person_id')
+    person_name = request.args.get('name')
 
     conn = mysql.open_connection()
 
     query = "SELECT company_id, was_buy, date FROM trades"
     query += " INNER JOIN companycategories AS cc ON cc.company_id = trades.company_id"
     query += " INNER JOIN billcategories AS bc ON bc.category_id = cc.category_id"
-    query += " WHERE (bc.bill_id = {0} AND trades.person_id = {1});".format(bill_id, person_id)
+    query += " INNER JOIN persons AS p ON p.id = trades.person_id"
+    query += " WHERE (bc.bill_id = {0} AND p.name = {1});".format(bill_id, person_name)
 
     results = mysql._get_query(conn, query)
 
