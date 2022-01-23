@@ -326,8 +326,12 @@ def push_tickers_and_categories():
 
 
 if __name__ == "__main__":
-	'''print("Pushing bill categories")
-	push_bill_categories_to_db()
-	print("Pushing ticker categories")
-	push_tickers_and_categories()'''
-	pass
+	conn = open_connection()
+	query = "SELECT company_id, was_buy, date FROM trades"
+	query += " INNER JOIN companycategories AS cc ON cc.company_id = trades.company_id"
+	query += " INNER JOIN billcategories AS bc ON bc.category_id = cc.category_id"
+	query += " WHERE (bc.bill_id = {0} AND trades.person_id = {1});".format(bill_id, person_id)
+
+	results = _get_query(conn, query)
+	print(results)
+	close_connection()
