@@ -2,12 +2,8 @@
 import re
 import nltk
 from vote_data_parser_copy import get_all_bill_text, Bill
-#import textacy
-#import textacy.ke
 import pandas as pd
 import nltk
-#import spacy
-#from tqdm import tqd
 
 predefined_categories = ['oil', 'telecom', 'utilities', 'retail', 'health', 'real_estate', 'precious_metals', 'technology', 'finance', 'industrial', 'energy', 'materials']
 
@@ -32,14 +28,14 @@ def find_similar_words():
 
 # broadened_category_lists = find_similar_words()
 
-# manually edited down categories
+# manually edited down categories - would be better to use a machine learning model to get these keywords ALONGSIDE manual annotation to categories
 broadened_category_lists = ***REMOVED***
      "other": ['education', 'educational', 'crime'],
      "oil": ['oil', 'petroleum', 'crude_oil', 'crude', 'fossil_oil', 'fuel'],
-     "telecom": ['telecom', 'telecommunication', '4g', '5g', 'phone', 'telephone'],
+     "telecom": ['telecom', 'telecommunication', '4g', '5g', 'phone', 'telephone', 'communications'],
      "utilities": ['utilities', 'utility', 'energy', 'water'],
      "retail": ['retail', 'consumer'],
-     "health": ['health', 'wellness', 'medicine','medical', 'drug', 'care', 'patient', 'cancer'],
+     "health": ['health', 'wellness', 'medicine','medical', 'drug', 'care', 'patient', 'cancer', 'physicians', 'physician'],
      "real_estate": ['real_estate', 'real_property', 'realty', 'housing', 'houses', 'homes'],
      "precious_metals": ['precious_metal','gold', 'silver'],
      "technology": ['technology', 'engineering', 'computer', 'software', 'hardware'],
@@ -64,13 +60,13 @@ billTextList = get_all_bill_text()
 def categorise_data(billTextList):
     tokenisedBillTextList = ***REMOVED******REMOVED***
 
-    for billText in billTextList[0:2]:
+    for billText in billTextList:
         tokenisedBillTextList[billText.title] = tokenise(billText.desc)
 
     billTitleCategorisationMap = ***REMOVED******REMOVED***
 
     for billTitle in tokenisedBillTextList:
-        print(billTitle)
+        #print(billTitle)
         currentClassificationsCounts = ***REMOVED***
         "other": 0, # put first in the case of a tie
         "oil": 0,
@@ -97,5 +93,8 @@ def categorise_data(billTextList):
         max_key = max(currentClassificationsCounts, key=currentClassificationsCounts.get)
         billTitleCategorisationMap[billTitle] = max_key
 
-        return billTitleCategorisationMap
 
+    return billTitleCategorisationMap
+
+if __name__ == "__main__":
+    print(categorise_data(billTextList))
