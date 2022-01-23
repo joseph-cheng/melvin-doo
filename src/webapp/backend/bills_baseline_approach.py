@@ -2,7 +2,7 @@
 import re
 import nltk
 from vote_data_parser_copy import get_all_bill_text, Bill
-import pandas as pd
+#import pandas as pd
 import nltk
 
 predefined_categories = ['oil', 'telecom', 'utilities', 'retail', 'health', 'real_estate', 'precious_metals', 'technology', 'finance', 'industrial', 'energy', 'materials']

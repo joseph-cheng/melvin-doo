@@ -1,6 +1,7 @@
 import pymysql
 import datetime
 import companies_scraper
+import bills_baseline_approach
 
 '''
 Useful methods:
@@ -197,27 +198,6 @@ def process_trade(conn, trade):
 	_add_trade(conn, personID, tickerID, buy_or_sell, date)
 
 
-def fill_tickers_and_categories(conn):
-	pairs = companies_scraper.get_ticker_categories()
-
-	for company, categories in pairs:
-		# Get the ticker ID (or add to Companies if a new ticker)
-		ticker_id = _get_id(conn, "companies", "company", company)
-		if ticker_id is None:
-			_add_company(conn, company)
-			ticker_id = _get_id(conn, "companies", "company", company)
-
-		for category in categories:
-
-			category_id = _get_id(conn, "categories", "category", category)
-			if category_id is None:
-				# Have found a new category so add it to Categories
-				_add_category(conn, category)
-				category_id = _get_id(conn, "categories", "category", category)
-
-			_add_company_category(conn, ticker_id, category_id)
-
-
 def get_votes_influenced_by_trades(person, time_range=5):
 	conn = open_connection()
 
@@ -284,5 +264,65 @@ def _get_votes_auxiliary(conn, query, time_range):
 	return conflicts
 
 
+def push_bill_categories_to_db():
+	conn = open_connection()
+
+	billTitleCategorisationMap = bills_baseline_approach.categorise_data(bills_baseline_approach.billTextList)
+	print(billTitleCategorisationMap)
+
+	for key in billTitleCategorisationMap:
+		# add category to map if not in already
+		category = billTitleCategorisationMap[key]
+		category_id = _get_id(conn, "categories", "category", category)
+		if category_id is None:
+			# Have found a new category so add it to Categories
+			_add_category(conn, category)
+			category_id = _get_id(conn, "categories", "category", category)
+
+		bill_id = _get_id(conn, "bills", "bill", key)
+		if bill_id is None:
+			_add_bill(conn, key, "unknown")
+			bill_id = _get_id(conn, "bills", "bill", key)
+
+		if len(_get_query(conn, "SELECT * FROM billcategories WHERE bill_id = {0} AND category_id = {1};".format(bill_id, category_id)))>0:
+			continue
+
+		_add_bill_category(conn, bill_id, category)
+
+
+	close_connection(conn)
+
+
+def push_tickers_and_categories():
+	conn = open_connection()
+
+	pairs = companies_scraper.get_ticker_categories()
+
+	for company, categories in pairs:
+		# Get the ticker ID (or add to Companies if a new ticker)
+		ticker_id = _get_id(conn, "companies", "company", company)
+		if ticker_id is None:
+			_add_company(conn, company)
+			ticker_id = _get_id(conn, "companies", "company", company)
+
+		for category in categories:
+
+			category_id = _get_id(conn, "categories", "category", category)
+			if category_id is None:
+				# Have found a new category so add it to Categories
+				_add_category(conn, category)
+				category_id = _get_id(conn, "categories", "category", category)
+
+			if len(_get_query(conn,
+							  "SELECT * FROM companycategories WHERE company_id = {0} AND category_id = {1};".format(ticker_id,
+																											   category_id))) > 0:
+				continue
+
+			_add_company_category(conn, ticker_id, category_id)
+
+	close_connection(conn)
+
+
 if __name__ == "__main__":
-	pass
+	push_bill_categories_to_db()
+	push_tickers_and_categories()
