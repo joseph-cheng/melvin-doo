@@ -10,7 +10,7 @@ from selenium.webdriver.firefox.options import Options
 
 from bs4 import BeautifulSoup
 
-data_path = "long_term_bill_records"
+data_path = "melvin-doo/long_term_bill_records"
 
 
 @dataclass
