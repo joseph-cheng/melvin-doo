@@ -58,7 +58,7 @@ def convert_all_names(votes: Dict[str, int]):
 
 # ARGS: bill_name - filename of a bill, without the extension
 # RETURN: Bill object containing title, description, house and voting records of members for bill
-def get_bill(bill_name: str) -> Bill:
+def get_bill(bill_name: str, name_cache) -> Bill:
     votes = dict()
     house = ""
     votes_path = ""
@@ -88,11 +88,12 @@ def get_bill(bill_name: str) -> Bill:
 
     desc_file = open(f"{data_path}/summary/{bill_name}.txt", "r")
     desc = desc_file.readline()
+    print(desc)
     desc_file.close()
 
     date = datetime.datetime(1787 + int(bill_name[6:9]) * 2 + 1, 1, 3).strftime("%Y-%m-%d")
 
-    return Bill(title, desc, house, votes, date)
+    return Bill(title[:65535], desc, house, votes, date)
 
 
 # ARGS: bill_name - filename of a bill, without the extension
@@ -127,7 +128,6 @@ def get_all_bill_text() -> List[BillText]:
             text_list.append(hash(t.title))
     return res
 
-name_cache= dict()
 def get_all_bills():
     f = open("converted_names.csv")
     name_cache = dict()
@@ -137,14 +137,14 @@ def get_all_bills():
     res = []
     text_list = []
     for f in os.listdir(f"{data_path}/house_vote"):
-        t = get_bill(os.path.splitext(f)[0])
+        t = get_bill(os.path.splitext(f)[0], name_cache)
         if t is None:
             continue
         if t and hash(t.title) not in text_list:
             res.append(t)
             text_list.append(hash(t.title))
     for f in os.listdir(f"{data_path}/senate_vote"):
-        t = get_bill(os.path.splitext(f)[0])
+        t = get_bill(os.path.splitext(f)[0], name_cache)
         if t is None:
             continue
         if t and hash(t.title) not in text_list:

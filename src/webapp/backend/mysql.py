@@ -123,7 +123,7 @@ def _get_id(conn, table, column, value):
 def process_vote(conn, bill):
 
 	# Extract variables from bill
-	title = bill.title
+	title = bill.desc
 	house = bill.house
 	categories = [] #bill.categories
 	votes = bill.votes
@@ -142,7 +142,8 @@ def process_vote(conn, bill):
 		_add_bill_category(conn, billID, categoryID)
 
 	# Create a vote entry for each person voting on this bill
-	for person, vote in votes:
+	for person in votes:
+		vote = votes[person]
 		personID = _get_id(conn, "persons", "name", person)
 		if personID is None:
 			_add_person(conn, person)
