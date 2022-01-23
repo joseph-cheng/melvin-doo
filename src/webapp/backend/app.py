@@ -57,7 +57,7 @@ def get_congressperson_data():
     conn = mysql.open_connection()
     congressperson_name = request.args.get('name')
    
-    votes_query = f"SELECT persons.name, bills.ID, bills.bill, votes.voted_for, categories.category FROM persons INNER JOIN votes ON (persons.ID = votes.person_ID) INNER JOIN bills on (bills.ID = votes.bill_ID) INNER JOIN trades on (persons.ID = trades.person_id) INNER JOIN companycategories ON (companycategories.company_ID = trades.company_ID) INNER JOIN billcategories ON (billcategories.bill_ID = bills.ID) INNER JOIN categories on (categories.ID = billcategories.bill_ID) WHERE persons.name = '{congressperson_name}' AND companycategories.category_ID = billcategories.category_ID;"
+    votes_query = f"SELECT persons.name, bills.ID, votes.voted_for, categories.category FROM votes INNER JOIN bills ON bills.ID = votes.bill_ID INNER JOIN billcategories as bc ON bc.bill_ID = votes.bill_ID INNER JOIN categories ON categories.ID = bc.category_ID INNER JOIN persons on persons.ID = votes.person_ID INNER JOIN companycategories as cc on cc.category_ID = bc.category_ID INNER JOIN trades ON trades.company_ID = cc.company_ID WHERE trades.person_ID = votes.person_ID AND persons.name = '{congressperson_name}';"
     votes_result = mysql._execute_sql(conn, votes_query)
     mysql.close_connection(conn)
    
