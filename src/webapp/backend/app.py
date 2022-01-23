@@ -39,7 +39,11 @@ def get_stock_data():
 # Returns list of names (for autocomplete)
 @app.route('/members', methods=['GET'])
 def get_members_list():
-    f = open("src/webapp/backend/names.txt", "r")
+    f = None
+    if os.environ["HOME"] == "/home/joe":
+        f = open("names.txt", "r")
+    else:
+        f = open("src/webapp/backend/names.txt", "r")
     names = dict()
     for name in f.readlines():
         name = name[:-1]
@@ -51,8 +55,11 @@ def get_members_list():
 def get_congressperson_data():
     conn = mysql.open_connection()
     congressperson_name = request.args.get('name')
-    query = f"SELECT persons.name, companies.company, trades.was_buy, trades.date FROM persons INNER JOIN trades ON (persons.ID = trades.person_ID) INNER JOIN companies ON (companies.ID = trades.company_ID) WHERE persons.name = '{congressperson_name}';"
-    result = mysql._execute_sql(conn, query)
+    trades_query = f"SELECT persons.name, companies.company, trades.was_buy, trades.date FROM persons INNER JOIN trades ON (persons.ID = trades.person_ID) INNER JOIN companies ON (companies.ID = trades.company_ID) WHERE persons.name = '{congressperson_name}';"
+    trades_result = mysql._execute_sql(conn, trades_query)
+
+    votes_query = f"SELECT persons.name, bills.bill, votes.voted_for FROM persons INNER JOIN votes ON (persons.ID = votes.person_ID) INNER JOIN bills on (bills.ID = vote.bill_ID) WHERE persons.name = '{congressperson_name}';"
+    votes_result = mysql._execute_sql(conn, votes_query)
     mysql.close_connection(conn)
 
     trades_array = []
@@ -64,20 +71,17 @@ def get_congressperson_data():
             "Date": row[3].strftime("%Y-%m-%d")
             })
 
-    # TODO: actually get data
+    votes_array = []
+    for row in result:
+        votes_array.append({
+            "Name": row[0],
+            "Bill": row[1][:128],
+            "For/Against": row[2]
+            })
+
 
     return {
-        'votes': [
-            {
-                'test': 5,
-                'test2': 6,
-            },
-            {
-                'test': 7,
-                'test2': 8,
-            },
+        'votes': votes_array,
 
-        ],
-
-        'trades': trades_array
+        'trades': trades_array,
     }
