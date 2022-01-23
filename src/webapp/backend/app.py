@@ -12,11 +12,11 @@ if os.environ['HOME'] == '/home/joe':
     import mysql
 
     import sys
+
     sys.path.insert(0, "../../../")
 else:
     import src.webapp.backend.mysql
 from src.scraper.stock_charts import get_stock_prices
-
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -53,40 +53,50 @@ def get_members_list():
 
 @app.route('/get_congressperson_data', methods=['GET'])
 def get_congressperson_data():
-    # conn = mysql.open_connection()
-    # congressperson_name = request.args.get('name')
-    # trades_query = f"SELECT persons.name, companies.company, trades.was_buy, trades.date FROM persons INNER JOIN trades ON (persons.ID = trades.person_ID) INNER JOIN companies ON (companies.ID = trades.company_ID) WHERE persons.name = '{congressperson_name}';"
-    # trades_result = mysql._execute_sql(conn, trades_query)
-    #
-    # votes_query = f"SELECT persons.name, bills.bill, votes.voted_for FROM persons INNER JOIN votes ON (persons.ID = votes.person_ID) INNER JOIN bills on (bills.ID = votes.bill_ID) WHERE persons.name = '{congressperson_name}';"
-    # votes_result = mysql._execute_sql(conn, votes_query)
-    # mysql.close_connection(conn)
-    #
-    # trades_array = []
-    # for row in trades_result:
-    #     trades_array.append({
-    #         "Name": row[0],
-    #         "Ticker": row[1],
-    #         "Buy/Sell": row[2],
-    #         "Date": row[3].strftime("%Y-%m-%d")
-    #         })
-    #
-    # votes_array = []
-    # for row in votes_result:
-    #     votes_array.append({
-    #         "Name": row[0],
-    #         "Bill": row[1][:128],
-    #         "For/Against": row[2]
-    #         })
+    conn = mysql.open_connection()
+    congressperson_name = request.args.get('name')
+    trades_query = f"SELECT persons.name, companies.company, trades.was_buy, trades.date FROM persons INNER JOIN trades ON (persons.ID = trades.person_ID) INNER JOIN companies ON (companies.ID = trades.company_ID) WHERE persons.name = '{congressperson_name}';"
+    trades_result = mysql._execute_sql(conn, trades_query)
 
-    trades_array = [{"Name": "John", "Ticker": "GOOG", "Buy/Sell": "BUY", "Date": datetime.datetime(2019, 10, 15)},
-                    {"Name": "Alice", "Ticker": "TSLA", "Buy/Sell": "SELL", "Date": datetime.datetime(2020, 1, 13)}]
+    votes_query = f"SELECT persons.name, bills.bill, votes.voted_for FROM persons INNER JOIN votes ON (persons.ID = votes.person_ID) INNER JOIN bills on (bills.ID = votes.bill_ID) WHERE persons.name = '{congressperson_name}';"
+    votes_result = mysql._execute_sql(conn, votes_query)
+    mysql.close_connection(conn)
 
-    votes_array = [{"Name": "John", "Bill": "Bombing Iraq", "For/Against": "FOR"},
-                    {"Name": "Alice", "Bill": "Burning down the Amazon", "For/Against": "FOR"}]
+    trades_array = []
+    for row in trades_result:
+        trades_array.append({
+            "Name": row[0],
+            "Ticker": row[1],
+            "Buy/Sell": row[2],
+            "Date": row[3].strftime("%Y-%m-%d")
+        })
+
+    votes_array = []
+    for row in votes_result:
+        votes_array.append({
+            "Name": row[0],
+            "Bill": row[1][:128],
+            "For/Against": row[2]
+        })
+
+    # trades_array = [{"Name": "John", "Ticker": "GOOG", "Buy/Sell": "BUY", "Date": datetime.datetime(2019, 10, 15)},
+    #                 {"Name": "Alice", "Ticker": "TSLA", "Buy/Sell": "SELL", "Date": datetime.datetime(2020, 1, 13)}]
+    #
+    # votes_array = [{"Name": "John", "Bill": "Bombing Iraq", "For/Against": "FOR"},
+    #                 {"Name": "Alice", "Bill": "Burning down the Amazon", "For/Against": "FOR"}]
 
     return {
         'votes': votes_array,
 
         'trades': trades_array,
     }
+
+
+@app.route("/trades", methods=['GET'])
+def get_trades():
+    billID = request.args.get("billID")
+    if request.args.get("billID") == '0':
+        return { 'trades': [{"Name": "John", "Ticker": "GOOG", "Buy/Sell": "BUY", "Date": datetime.datetime(2019, 10, 15)},
+                {"Name": "Alice", "Ticker": "TSLA", "Buy/Sell": "SELL", "Date": datetime.datetime(2020, 1, 13)}]}
+    return { 'trades': [{"Name": "Blah", "Ticker": "APPL", "Buy/Sell": "BUY", "Date": datetime.datetime(2018, 10, 15)},
+                {"Name": "Melvin", "Ticker": "NOK", "Buy/Sell": "BUY", "Date": datetime.datetime(2021, 1, 13)}]}

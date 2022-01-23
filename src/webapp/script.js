@@ -21,7 +21,7 @@ function getCongresspersonData(congressperson, votesDiv, tradesDiv) {
     }).then((response) => {
         console.log(response);
         votesDiv.appendChild(buildVotesTable(response['votes']));
-        tradesDiv.appendChild(buildTradesTable(response['trades']));
+        // tradesDiv.appendChild(buildTradesTable(response['trades']));
     });
 }
 
@@ -79,10 +79,12 @@ function buildChart(data, start, end, chartCanvas) {
 function buildVotesTable(arr) {
     let table = _table_.cloneNode(false),
         columns = addAllColumnHeaders(arr, table);
-    for (let i = 0, maxi = arr.length; i < maxi; ++i) {
+    for (let i = 0, maxi = 3; i < maxi; ++i) {
         let tr = _tr_.cloneNode(false);
         // let a = document.createElement("a");
-        tr.addEventListener("click", () => { console.log(`clicked ${i}`) })
+        arr[i]['Bill'] = arr[i]['Bill'][0].toUpperCase() + arr[i]['Bill'].substring(1)
+        arr[i]['Bill'] += '.';
+        tr.addEventListener("click", () => { showTrades(i) })
         tr.classList.add("vote-row")
         // tr.appendChild(a);
         for (let j = 0, maxj = columns.length; j < maxj; ++j) {
@@ -99,7 +101,7 @@ function buildVotesTable(arr) {
 function buildTradesTable(arr) {
     let table = _table_.cloneNode(false),
         columns = addAllColumnHeaders(arr, table);
-    for (let i = 0, maxi = arr.length; i < maxi; ++i) {
+    for (let i = 0; i < arr.length; ++i) {
         let tr = _tr_.cloneNode(false);
         for (let j = 0, maxj = columns.length; j < maxj; ++j) {
             let td = _td_.cloneNode(false);
@@ -152,10 +154,21 @@ function linSpaceZip(start, end, cardinality, data) {
     return arr;
 }
 
+let showTrades = (billID) => {
+    var tradesDiv = document.getElementById("tradesTable");
+    tradesDiv.innerHTML = '';
+    fetch(`http://localhost:5000/trades?billID=${billID}`).then((response) => {
+        return response.json();
+    }).then((response) => {
+        console.log(response);
+        tradesDiv.appendChild(buildTradesTable(response['trades']));
+    });
+}
+
 
 let displayTable = () => {
     let votesDiv = document.getElementById("votesTable");
-    let tradesDiv = document.getElementById("tradesTable");
+    var tradesDiv = document.getElementById("tradesTable");
     let chartCanvas = document.getElementById("chartCanvas");
     getCongresspersonData("Representative Cole, Tom", votesDiv, tradesDiv);
 
