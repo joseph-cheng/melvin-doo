@@ -104,12 +104,12 @@ def get_trades():
     query = "SELECT company_id, was_buy, date FROM trades"
     query += " INNER JOIN companycategories AS cc ON cc.company_id = trades.company_id"
     query += " INNER JOIN billcategories AS bc ON bc.category_id = cc.category_id"
-    query += " WHERE bc.bill_id = {0} AND trades.person_id = {1};".format(bill_id, person_id)
+    query += " WHERE (bc.bill_id = {0} AND trades.person_id = {1});".format(bill_id, person_id)
 
     results = mysql._get_query(conn, query)
 
     trades = []
-    
+
     for res in results:
         trades.append(res)
 
