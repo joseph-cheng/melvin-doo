@@ -58,12 +58,12 @@ def get_congressperson_data():
     trades_query = f"SELECT persons.name, companies.company, trades.was_buy, trades.date FROM persons INNER JOIN trades ON (persons.ID = trades.person_ID) INNER JOIN companies ON (companies.ID = trades.company_ID) WHERE persons.name = '{congressperson_name}';"
     trades_result = mysql._execute_sql(conn, trades_query)
 
-    votes_query = f"SELECT persons.name, bills.bill, votes.voted_for FROM persons INNER JOIN votes ON (persons.ID = votes.person_ID) INNER JOIN bills on (bills.ID = vote.bill_ID) WHERE persons.name = '{congressperson_name}';"
+    votes_query = f"SELECT persons.name, bills.bill, votes.voted_for FROM persons INNER JOIN votes ON (persons.ID = votes.person_ID) INNER JOIN bills on (bills.ID = votes.bill_ID) WHERE persons.name = '{congressperson_name}';"
     votes_result = mysql._execute_sql(conn, votes_query)
     mysql.close_connection(conn)
 
     trades_array = []
-    for row in result:
+    for row in trades_result:
         trades_array.append({
             "Name": row[0],
             "Ticker": row[1],
@@ -72,7 +72,7 @@ def get_congressperson_data():
             })
 
     votes_array = []
-    for row in result:
+    for row in votes_result:
         votes_array.append({
             "Name": row[0],
             "Bill": row[1][:128],
