@@ -1,0 +1,100 @@
+# our pre-defined categories = ***REMOVED***'oil', 'telecom', 'utilities', 'retail', 'health', 'real estate', 'precious metals', 'technology', 'finance', 'industrial', 'energy', 'materials'***REMOVED***
+import re
+import nltk
+from vote_data_parser_copy import get_all_bill_text, Bill
+import pandas as pd
+import nltk
+
+predefined_categories = ['oil', 'telecom', 'utilities', 'retail', 'health', 'real_estate', 'precious_metals', 'technology', 'finance', 'industrial', 'energy', 'materials']
+
+def find_similar_words():
+    broadened_category_lists = ***REMOVED******REMOVED***
+    from nltk.corpus import wordnet as wn
+    for predefined_category in predefined_categories:
+        list = [predefined_category]
+        for related_word_list in wn.synsets(predefined_category): # Each synset represents a diff concept.
+            #list += related_word_list.lemma_names()
+            for word in related_word_list.lemma_names():
+                if word not in list:
+                    list.append(word)
+        
+        broadened_category_lists[predefined_category] = list
+
+    for category in broadened_category_lists:
+        print(category)
+        print(broadened_category_lists[category])  
+    
+    return broadened_category_lists
+
+# broadened_category_lists = find_similar_words()
+
+# manually edited down categories - would be better to use a machine learning model to get these keywords ALONGSIDE manual annotation to categories
+broadened_category_lists = ***REMOVED***
+     "other": ['education', 'educational', 'crime'],
+     "oil": ['oil', 'petroleum', 'crude_oil', 'crude', 'fossil_oil', 'fuel'],
+     "telecom": ['telecom', 'telecommunication', '4g', '5g', 'phone', 'telephone', 'communications'],
+     "utilities": ['utilities', 'utility', 'energy', 'water'],
+     "retail": ['retail', 'consumer'],
+     "health": ['health', 'wellness', 'medicine','medical', 'drug', 'care', 'patient', 'cancer', 'physicians', 'physician'],
+     "real_estate": ['real_estate', 'real_property', 'realty', 'housing', 'houses', 'homes'],
+     "precious_metals": ['precious_metal','gold', 'silver'],
+     "technology": ['technology', 'engineering', 'computer', 'software', 'hardware'],
+     "finance": ['finance', 'financial', 'invest', 'investment', 'bank'],
+     "industrial": ['industrial', 'industry'],
+     "energy": ['energy', 'coal', 'gas', 'solar', 'wind'],
+     "materials": ['materials', 'material']
+***REMOVED***
+
+def tokenise(text):
+    regex = re.compile('[^a-zA-Z]')
+    tokens = []
+    for sent in nltk.sent_tokenize(text):
+        for word in nltk.word_tokenize(sent):
+            clean_word = regex.sub('', word)
+            if len(clean_word) > 1:
+                tokens.append(clean_word.lower())
+    return tokens
+
+billTextList = get_all_bill_text()
+
+def categorise_data(billTextList):
+    tokenisedBillTextList = ***REMOVED******REMOVED***
+
+    for billText in billTextList:
+        tokenisedBillTextList[billText.title] = tokenise(billText.desc)
+
+    billTitleCategorisationMap = ***REMOVED******REMOVED***
+
+    for billTitle in tokenisedBillTextList:
+        #print(billTitle)
+        currentClassificationsCounts = ***REMOVED***
+        "other": 0, # put first in the case of a tie
+        "oil": 0,
+        "telecom": 0,
+        "utilities": 0,
+        "retail": 0,
+        "health": 0,
+        "real_estate": 0,
+        "precious_metals": 0,
+        "technology": 0,
+        "finance": 0,
+        "industrial": 0,
+        "energy": 0,
+        "materials": 0
+    ***REMOVED***
+        tokens = tokenisedBillTextList[billTitle]
+        #print(tokens)
+        for token in tokens:
+            #print(token)
+            for key in currentClassificationsCounts:
+                if token in broadened_category_lists[key]:
+                    currentClassificationsCounts[key] = currentClassificationsCounts[key] + 1
+        
+        max_key = max(currentClassificationsCounts, key=currentClassificationsCounts.get)
+        billTitleCategorisationMap[billTitle] = max_key
+
+
+    return billTitleCategorisationMap
+
+if __name__ == "__main__":
+    print(categorise_data(billTextList))
