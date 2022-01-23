@@ -37,8 +37,8 @@ def get_stock_data():
     ticker = request.args.get('ticker')
     start_raw = request.args.get('start')
     end_raw = request.args.get('end')
-    start = datetime.datetime.strptime(start_raw.split("T")[0], "%Y-%m-%d")
-    end = datetime.datetime.strptime(end_raw.split("T")[0], "%Y-%m-%d")
+    start = datetime.datetime(2020, 1, 1)
+    end = datetime.datetime(2022, 1, 1)
 
     return {'data': get_stock_prices(ticker, start, end)}
 

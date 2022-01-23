@@ -27,6 +27,7 @@ function getNames() {
 // }
 
 function getStockData(ticker, start, end, chartCanvas) {
+    console.log("getting chart");
     fetch(`http://localhost:5000/stocks?ticker=${ticker}&start=${start}&end=${end}`).then((response) => {
         return response.json();
     }).then((response) => {
@@ -37,6 +38,7 @@ function getStockData(ticker, start, end, chartCanvas) {
 
 function buildChart(data, start, end, chartCanvas) {
     chartCanvas.innerHTML = '';
+    chart.destroy();
     const ctx = chartCanvas.getContext('2d');
     const newdata = linSpaceZip(start, end, data.length, data);
     const labels = linSpace(0, data.length, newdata.length, data);
@@ -52,27 +54,10 @@ function buildChart(data, start, end, chartCanvas) {
         }]
     };
 
-    const annotation = {
-        type: "line",
-        mode: "vertical",
-        scaleID: "x",
-        value: 30,
-        borderColor: "red",
-        borderWidth: 1,
-    };
 
     const chart = new Chart(ctx, {
         type: 'line',
         data: chartData,
-        options: {
-            plugins: {
-                annotation: {
-                    annotations: {
-                        annotation
-                    }
-                }
-            }
-        }
     });
 }
 
