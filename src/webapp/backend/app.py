@@ -4,6 +4,7 @@ from flask import request
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 import time
+import mysql
 
 import os
 
@@ -35,6 +36,17 @@ def get_stock_data():
     end = datetime.datetime.strptime(end_raw.split("T")[0], "%Y-%m-%d")
 
     return ***REMOVED***'data': get_stock_prices(ticker, start, end)***REMOVED***
+
+
+# Returns list of names (for autocomplete)
+@app.route('/members', methods=['GET'])
+def get_members_list():
+    f = open("src/webapp/backend/names.txt", "r")
+    names = dict()
+    for name in f.readlines():
+        name = name[:-1]
+        names[name] = None
+    return names
 
 
 @app.route('/get_congressperson_data', methods=['GET'])

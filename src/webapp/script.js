@@ -4,6 +4,17 @@ let _table_ = document.createElement('table'),
     _td_ = document.createElement('td'),
     _canvas_ = document.createElement('canvas');
 
+function getNames() ***REMOVED***
+    fetch('http://localhost:5000/members').then((response) => response.json()).then((data) => ***REMOVED***
+        $(document).ready(function () ***REMOVED***
+            $('input.autocomplete').autocomplete(***REMOVED***
+                data: data
+            ***REMOVED***);
+        ***REMOVED***);
+    ***REMOVED***);
+***REMOVED***
+
+// TODO: remove get prefix & make consistent with above endpoint
 function getCongresspersonData(congressperson, votesDiv, tradesDiv) ***REMOVED***
     fetch('http://localhost:5000/get_congressperson_data?name=' + congressperson).then((response) => ***REMOVED***
         return response.json();
@@ -126,7 +137,7 @@ let displayTable = () => ***REMOVED***
     let votesDiv = document.getElementById("votesTable");
     let tradesDiv = document.getElementById("tradesTable");
     let chartCanvas = document.getElementById("chartCanvas");
-    getCongresspersonData("Representative Cole, Tom", votesDiv, tradesDiv);
+    // getCongresspersonData("Representative Cole, Tom", votesDiv, tradesDiv);
 
     let start = new Date('August 19, 2019');
     let end = new Date('March 9, 2020');
