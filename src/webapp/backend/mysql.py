@@ -9,11 +9,8 @@ Useful methods:
 	- get_votes_influenced_by_trades(person, time_range=5) - return a list of conflicts between trades and votes by a given person
 	- get_votes_influenced_by_trades_filtered_by_category(person, category, time_range=5) - return a list of conflicts between trades and votes by a given person for a given category
 '''
-# Useful methods:
 
-
-
-class Bill:
+'''class Bill:
 	def __init__(self, title, house, votes, date):
 		self.title = title
 		self.house = house
@@ -26,7 +23,7 @@ class Trade:
 		self.person = person
 		self.ticker = ticker
 		self.buy_or_sell = buy_or_sell
-		self.date = date
+		self.date = date'''
 
 
 def open_connection():
@@ -151,7 +148,7 @@ def process_vote(conn, bill):
 	# Extract variables from bill
 	title = bill.title
 	house = bill.house
-	categories = ["defence", "housing"] #bill.categories
+	categories = bill.categories
 	votes = bill.votes
 	date = datetime.date.today()
 
@@ -224,10 +221,10 @@ def fill_tickers_and_categories(conn):
 def get_votes_influenced_by_trades(person, time_range=5):
 	conn = open_connection()
 
-	person_id = _get_id(conn, "Persons", "name", person)
+	person_id = _get_id(conn, "persons", "name", person)
 
 	query = _get_initial_query_auxiliary()
-	query += " WHERE (Votes.person_ID = '{}');".format(person_id)
+	query += " WHERE (votes.person_ID = '{}');".format(person_id)
 
 	return _get_votes_auxiliary(conn, query, time_range)
 
@@ -235,21 +232,21 @@ def get_votes_influenced_by_trades(person, time_range=5):
 def get_votes_influenced_by_trades_filtered_by_category(person, category, time_range=5):
 	conn = open_connection()
 
-	person_id = _get_id(conn, "Persons", "name", person)
-	category_id = _get_id(conn, "Categories", "category", category)
+	person_id = _get_id(conn, "persons", "name", person)
+	category_id = _get_id(conn, "categories", "category", category)
 
 	query = _get_initial_query_auxiliary()
-	query += " WHERE (Votes.person_ID = '{0}' AND cat.ID = {1});".format(person_id, category_id)
+	query += " WHERE (votes.person_ID = '{0}' AND cat.ID = {1});".format(person_id, category_id)
 
 	return _get_votes_auxiliary(conn, query, time_range)
 
 
 def _get_initial_query_auxiliary():
-	query = "SELECT *, DATEDIFF(Votes.date, Trades.date) AS difference FROM Votes"
-	query += " INNER JOIN BillCategories AS bc ON bc.bill_ID = Votes.bill_ID"
-	query += " INNER JOIN Categories AS cat ON cat.ID = bc.category_ID"
-	query += " INNER JOIN Trades ON Trades.person_ID = Votes.person_ID"
-	query += " INNER JOIN CompanyCategories AS cc ON (cc.company_ID = Trades.company_ID AND cc.category_ID = cat.ID)"
+	query = "SELECT *, DATEDIFF(votes.date, trades.date) AS difference FROM votes"
+	query += " INNER JOIN billcategories AS bc ON bc.bill_ID = votes.bill_ID"
+	query += " INNER JOIN categories AS cat ON cat.ID = bc.category_ID"
+	query += " INNER JOIN trades ON trades.person_ID = votes.person_ID"
+	query += " INNER JOIN companycategories AS cc ON (cc.company_ID = trades.company_ID AND cc.category_ID = cat.ID)"
 	return query
 
 
@@ -288,12 +285,4 @@ def _get_votes_auxiliary(conn, query, time_range):
 
 
 if __name__ == "__main__":
-	'''conn = _open_connection()
-
-	process_vote(conn, Bill("Bill of Rights", "house", [("Will", 1),("Aga", 0),("Joe", 0),("Maxim", 1)], datetime.date.today()))
-	process_trade(conn, Trade("Will", "TSL", "buy", datetime.date.today()))
-	conflicts = get_votes_influenced_by_trades(conn, "Will")
-	print("Conflicts: {}".format(conflicts))
-
-	_close_connection(conn)'''
 	pass
