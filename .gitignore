@@ -8,7 +8,7 @@
 .idea/
 long_term_bill_records/
 apikey.txt
-credentials.json
+*credentials.json
 __pycache__/
 output.txt
 src/topic_labelling/bills_lbl2vec.py
