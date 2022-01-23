@@ -1,37 +1,58 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/1.2.2/chartjs-plugin-annotation.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <!-- Compiled and minified CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-            
+
 <script src="script.js"></script>
+
+<style>
+    body {
+        background-color: #d3dcee;
+    }
+
+    .input-field {
+        cursor: pointer;
+    }
+</style>
 
 <html>
 <body>
 
-    <div class="container">
-        <div class="row">
-            <div class="col" id="votesTable"></div>
-            <div class="col" id="tradesTable"></div>
-        </div>
-    </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col" id="chartDiv"></div>
-            <canvas id="chartCanvas" height="300" width="600"></canvas>
+<div class="container">
+    <div class="row center">
+        <h2 class="text-white">Insider Trading Detection</h2>
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <div class="row center">
+                <div class="input-field col s6">
+                    <input type="text" id="autocomplete-input" class="autocomplete">
+                    <label for="autocomplete-input">Search for a member of Congress to get started...</label>
+                </div>
+            </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col s6" id="chartDiv">
+            <canvas id="chartCanvas" height="300" width="500"></canvas>
+        </div>
+    </div>
+    <div class="col s6">
+        <div class="col" id="votesTable"></div>
+        <div class="col" id="tradesTable"></div>
+    </div>
+</div>
+
 
 <script>
-let votesDiv = document.getElementById("votesTable");
-let tradesDiv = document.getElementById("tradesTable");
-let chartCanvas = document.getElementById("chartCanvas");
-getCongresspersonData("Representative Cole, Tom", votesDiv, tradesDiv);
-getStockData('abc', 0, 100, chartCanvas);
+    getNames();
+    displayTable();
 </script>
 
 

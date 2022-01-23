@@ -121,7 +121,7 @@ def _remove_trade(conn, personID, companyID, wasBuy, date):
 
 # Add a new vote to the Votes table
 def _add_vote(conn, personID, billID, votedFor, date):
-	_execute_sql(conn, "INSERT INTO votes (person_ID, bill_ID, voted_for, date) VALUES ({0}, {1}, {2}, {3});".format(personID, billID, "for" if votedFor else "against", date))
+	_execute_sql(conn, "INSERT INTO votes (person_ID, bill_ID, voted_for, date) VALUES ({0}, {1}, '{2}', STR_TO_DATE('{3}', \"%Y-%m-%d\"));".format(personID, billID, "for" if votedFor == 1 else "against" if votedFor == -1 else "abstain", date))
 
 
 # Remove a vote from the Votes table
@@ -147,7 +147,7 @@ def _get_id(conn, table, column, value):
 
 def process_vote(conn, bill):
 	# Extract variables from bill
-	title = bill.title
+	title = bill.desc
 	house = bill.house
 	categories = bill.categories
 	votes = bill.votes
@@ -167,12 +167,14 @@ def process_vote(conn, bill):
 		_add_bill_category(conn, billID, categoryID)
 
 	# Create a vote entry for each person voting on this bill
-	for person, vote in votes:
+	for person in votes:
+		vote = votes[person]
 		personID = _get_id(conn, "persons", "name", person)
 		if personID is None:
 			_add_person(conn, person)
 			personID = _get_id(conn, "persons", "name", person)
-		voted_for = vote == 1
+		voted_for = vote 
+		date = bill.date
 		_add_vote(conn, personID, billID, voted_for, date)
 
 

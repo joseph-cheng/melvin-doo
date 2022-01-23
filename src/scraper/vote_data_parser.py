@@ -9,8 +9,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 
 from bs4 import BeautifulSoup
+import datetime
 
-data_path = "../../long_term_bill_records"
+data_path = "../../scraper/long_term_bill_records"
 
 
 @dataclass
@@ -19,6 +20,7 @@ class Bill:
     desc: str
     house: str
     votes: Dict[str, int]
+    date: str
 
 
 @dataclass
@@ -56,7 +58,7 @@ def convert_all_names(votes: Dict[str, int]):
 
 # ARGS: bill_name - filename of a bill, without the extension
 # RETURN: Bill object containing title, description, house and voting records of members for bill
-def get_bill(bill_name: str) -> Bill:
+def get_bill(bill_name: str, name_cache) -> Bill:
     votes = dict()
     house = ""
     votes_path = ""
@@ -68,11 +70,13 @@ def get_bill(bill_name: str) -> Bill:
         votes_path = f"{data_path}/senate_vote/{bill_name}.csv"
     else:
         print("Error: could not find file...")
-    with open(votes_path) as file:
-        reader = csv.reader(file, delimiter='|')
+    with open(votes_path, "r+") as f:
+        reader = csv.reader(f, delimiter='|')
         for row in reader:
             name, vote = row
             vote = int(vote)
+            if name not in name_cache:
+                return None
             name = name_cache[name]
             votes[name] = vote
 
@@ -84,9 +88,12 @@ def get_bill(bill_name: str) -> Bill:
 
     desc_file = open(f"{data_path}/summary/{bill_name}.txt", "r")
     desc = desc_file.readline()
+    print(desc)
     desc_file.close()
 
-    return Bill(title, desc, house, votes)
+    date = datetime.datetime(1787 + int(bill_name[6:9]) * 2 + 1, 1, 3).strftime("%Y-%m-%d")
+
+    return Bill(title[:65535], desc, house, votes, date)
 
 
 # ARGS: bill_name - filename of a bill, without the extension
@@ -121,6 +128,30 @@ def get_all_bill_text() -> List[BillText]:
             text_list.append(hash(t.title))
     return res
 
+def get_all_bills():
+    f = open("converted_names.csv")
+    name_cache = dict()
+    for line in f.readlines():
+        vals = line.split(":")
+        name_cache[vals[0]] = "".join(vals[1:])[:-1]
+    res = []
+    text_list = []
+    for f in os.listdir(f"{data_path}/house_vote"):
+        t = get_bill(os.path.splitext(f)[0], name_cache)
+        if t is None:
+            continue
+        if t and hash(t.title) not in text_list:
+            res.append(t)
+            text_list.append(hash(t.title))
+    for f in os.listdir(f"{data_path}/senate_vote"):
+        t = get_bill(os.path.splitext(f)[0], name_cache)
+        if t is None:
+            continue
+        if t and hash(t.title) not in text_list:
+            res.append(t)
+            text_list.append(hash(t.title))
+    return res
+
 
 if __name__ == "__main__":
     f = open("converted_names.csv")
@@ -128,6 +159,5 @@ if __name__ == "__main__":
     for line in f.readlines():
         vals = line.split(":")
         name_cache[vals[0]] = "".join(vals[1:])[:-1]
-    b = get_bill("BILLS-112s307rfh")
-    l = get_all_bill_text()
-    print(b)
+
+    print(get_all_bills())
