@@ -47,14 +47,15 @@ def get_stock_data():
 @app.route('/members', methods=['GET'])
 def get_members_list():
     f = None
-    if 'HOME' in os.environ.keys():
-        if os.environ["HOME"] == "/home/joe":
-            f = open("names.txt", "r")
-    elif 'HOMEPATH' in os.environ.keys():
-        if os.environ['HOMEPATH'] == '\\Users\\Aga':
-            f = open("names.txt", "r")
-    else:
-        f = open("src/webapp/backend/names.txt", "r")
+    # if 'HOME' in os.environ.keys():
+    #     if os.environ["HOME"] == "/home/joe":
+    #         f = open("names.txt", "r")
+    # elif 'HOMEPATH' in os.environ.keys() and os.environ['HOMEPATH'] == '\\Users\\Aga':
+    #     f = open("names.txt", "r")
+    # else:
+    #     pass
+    f = open("src/webapp/backend/names.txt", "r")
+    # f = open("names.txt", "r")
     names = dict()
     for name in f.readlines():
         name = name[:-1]
@@ -66,7 +67,7 @@ def get_members_list():
 def get_congressperson_data():
     conn = mysql.open_connection()
     congressperson_name = request.args.get('name')
-    congressperson_name = "Representative Pelosi, Nancy"
+    # congressperson_name = "Representative Pelosi, Nancy"
    
     votes_query = f"SELECT DISTINCT persons.name, bills.ID, bills.bill, votes.voted_for, categories.category FROM votes INNER JOIN bills ON bills.ID = votes.bill_ID INNER JOIN billcategories as bc ON bc.bill_ID = votes.bill_ID INNER JOIN categories ON categories.ID = bc.category_ID INNER JOIN persons on persons.ID = votes.person_ID INNER JOIN companycategories as cc on cc.category_ID = bc.category_ID INNER JOIN trades ON trades.company_ID = cc.company_ID WHERE trades.person_ID = votes.person_ID AND persons.name = '{congressperson_name}';"
     votes_result = mysql._execute_sql(conn, votes_query)
@@ -97,11 +98,12 @@ def get_trades():
 
     conn = mysql.open_connection()
 
-    query = "SELECT cc.company_id, was_buy, date FROM trades"
+    query = "SELECT DISTINCT companies.company, was_buy, date FROM trades"
     query += " INNER JOIN companycategories AS cc ON cc.company_id = trades.company_id"
+    query += " INNER JOIN companies ON cc.company_id = companies.ID"
     query += " INNER JOIN billcategories AS bc ON bc.category_id = cc.category_id"
     query += " INNER JOIN persons AS p ON p.id = trades.person_id"
-    query += " WHERE (bc.bill_id = {0} AND p.name = {1});".format(bill_id, person_name)
+    query += " WHERE (bc.bill_id = {0} AND p.name = '{1}');".format(bill_id, person_name)
 
     results = mysql._get_query(conn, query)
 

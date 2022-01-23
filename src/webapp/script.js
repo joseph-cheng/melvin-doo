@@ -36,6 +36,7 @@ function getStockData(ticker, start, end, chartCanvas) {
 }
 
 function buildChart(data, start, end, chartCanvas) {
+    chartCanvas.innerHTML = '';
     const ctx = chartCanvas.getContext('2d');
     const newdata = linSpaceZip(start, end, data.length, data);
     const labels = linSpace(0, data.length, newdata.length, data);
@@ -85,7 +86,7 @@ function buildVotesTable(arr) {
         // let a = document.createElement("a");
         arr[i]['Bill'] = arr[i]['Bill'][0].toUpperCase() + arr[i]['Bill'].substring(1)
         arr[i]['Bill'] += '.';
-        tr.addEventListener("click", () => { showTrades(67, arr[i]['Name']) })
+        tr.addEventListener("click", () => { showTrades(arr[i]['Bill ID'], arr[i]['Name']) })
         tr.classList.add("vote-row")
         // tr.appendChild(a);
         for (let j = 0, maxj = columns.length; j < maxj; ++j) {
@@ -164,7 +165,7 @@ function linSpaceZip(start, end, cardinality, data) {
 let showTrades = (billID, name) => {
     var tradesDiv = document.getElementById("tradesTable");
     tradesDiv.innerHTML = '';
-    fetch(`http://localhost:5000/trades?billID=${billID}&name=${name}`).then((response) => {
+    fetch(`http://localhost:5000/trades?bill_id=${billID}&name=${name}`).then((response) => {
         return response.json();
     }).then((response) => {
         console.log(response);
@@ -173,7 +174,7 @@ let showTrades = (billID, name) => {
 }
 
 let showVotes = (name) => {
-    var votesDiv = document.getElementById("tradesTable");
+    var votesDiv = document.getElementById("votesTable");
     votesDiv.innerHTML = '';
     fetch(`http://localhost:5000/get_congressperson_bills?name=${name}`).then((response) => {
         return response.json();
