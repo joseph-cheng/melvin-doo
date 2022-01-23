@@ -97,5 +97,5 @@ def categorise_data(billTextList):
         max_key = max(currentClassificationsCounts, key=currentClassificationsCounts.get)
         billTitleCategorisationMap[billTitle] = max_key
 
-        return 
+        return billTitleCategorisationMap
 
