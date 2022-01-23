@@ -18,6 +18,25 @@
     .input-field {
         cursor: pointer;
     }
+
+    #votesTable {
+        width: 100%;
+        margin-bottom: 30px;
+        transition: 1s;
+    }
+
+    .vote-row {
+        transition: 0.1s;
+    }
+
+    .vote-row:hover {
+        cursor: pointer;
+        background-color: #bdc5d5;
+    }
+
+    #tradesTable {
+        width: 100%;
+    }
 </style>
 
 <html>
@@ -42,10 +61,11 @@
         <div class="col s6" id="chartDiv">
             <canvas id="chartCanvas" height="300" width="500"></canvas>
         </div>
-    </div>
-    <div class="col s6">
-        <div class="col" id="votesTable"></div>
-        <div class="col" id="tradesTable"></div>
+        <div class="col s6">
+            <div class="col" id="votesTable"></div>
+            <br>
+            <div class="col" id="tradesTable"></div>
+        </div>
     </div>
 </div>
 
