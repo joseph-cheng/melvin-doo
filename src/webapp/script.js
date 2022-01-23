@@ -4,142 +4,142 @@ let _table_ = document.createElement('table'),
     _td_ = document.createElement('td'),
     _canvas_ = document.createElement('canvas');
 
-function getNames() ***REMOVED***
-    fetch('http://localhost:5000/members').then((response) => response.json()).then((data) => ***REMOVED***
-        $(document).ready(function () ***REMOVED***
-            $('input.autocomplete').autocomplete(***REMOVED***
+function getNames() {
+    fetch('http://localhost:5000/members').then((response) => response.json()).then((data) => {
+        $(document).ready(function () {
+            $('input.autocomplete').autocomplete({
                 data: data
-            ***REMOVED***);
-        ***REMOVED***);
-    ***REMOVED***);
-***REMOVED***
+            });
+        });
+    });
+}
 
 // TODO: remove get prefix & make consistent with above endpoint
-function getCongresspersonData(congressperson, votesDiv, tradesDiv) ***REMOVED***
-    fetch('http://localhost:5000/get_congressperson_data?name=' + congressperson).then((response) => ***REMOVED***
+function getCongresspersonData(congressperson, votesDiv, tradesDiv) {
+    fetch('http://localhost:5000/get_congressperson_data?name=' + congressperson).then((response) => {
         return response.json();
-    ***REMOVED***).then((response) => ***REMOVED***
+    }).then((response) => {
         console.log(response);
         votesDiv.appendChild(buildHtmlTable(response['votes']));
         tradesDiv.appendChild(buildHtmlTable(response['trades']));
-    ***REMOVED***);
-***REMOVED***
+    });
+}
 
-function getStockData(ticker, start, end, chartCanvas) ***REMOVED***
-    fetch(`http://localhost:5000/stocks?ticker=$***REMOVED***ticker***REMOVED***&start=$***REMOVED***start***REMOVED***&end=$***REMOVED***end***REMOVED***`).then((response) => ***REMOVED***
+function getStockData(ticker, start, end, chartCanvas) {
+    fetch(`http://localhost:5000/stocks?ticker=${ticker}&start=${start}&end=${end}`).then((response) => {
         return response.json();
-    ***REMOVED***).then((response) => ***REMOVED***
+    }).then((response) => {
         console.log(response);
         buildChart(response['data'], start, end, chartCanvas);
-    ***REMOVED***);
-***REMOVED***
+    });
+}
 
-function buildChart(data, start, end, chartCanvas) ***REMOVED***
+function buildChart(data, start, end, chartCanvas) {
     const ctx = chartCanvas.getContext('2d');
     const newdata = linSpaceZip(start, end, data.length, data);
     const labels = linSpace(0, data.length, newdata.length, data);
 
-    const chartData = ***REMOVED***
+    const chartData = {
         labels: labels,
-        datasets: [***REMOVED***
+        datasets: [{
             label: "Price",
             data: newdata,
             fill: false,
             borderColor: 'rgb(75, 192, 192)',
             tension: 0.0,
-        ***REMOVED***]
-    ***REMOVED***;
+        }]
+    };
 
-    const annotation = ***REMOVED***
+    const annotation = {
         type: "line",
         mode: "vertical",
         scaleID: "x",
         value: 30,
         borderColor: "red",
         borderWidth: 1,
-    ***REMOVED***;
+    };
 
-    const chart = new Chart(ctx, ***REMOVED***
+    const chart = new Chart(ctx, {
         type: 'line',
         data: chartData,
-        options: ***REMOVED***
-            plugins: ***REMOVED***
-                annotation: ***REMOVED***
-                    annotations: ***REMOVED***
+        options: {
+            plugins: {
+                annotation: {
+                    annotations: {
                         annotation
-                    ***REMOVED***
-                ***REMOVED***
-            ***REMOVED***
-        ***REMOVED***
-    ***REMOVED***);
-***REMOVED***
+                    }
+                }
+            }
+        }
+    });
+}
 
 
 // Builds the HTML Table out of myList json data from Ivy restful service.
-function buildHtmlTable(arr) ***REMOVED***
+function buildHtmlTable(arr) {
     let table = _table_.cloneNode(false),
         columns = addAllColumnHeaders(arr, table);
-    for (let i = 0, maxi = arr.length; i < maxi; ++i) ***REMOVED***
+    for (let i = 0, maxi = arr.length; i < maxi; ++i) {
         let tr = _tr_.cloneNode(false);
-        for (let j = 0, maxj = columns.length; j < maxj; ++j) ***REMOVED***
+        for (let j = 0, maxj = columns.length; j < maxj; ++j) {
             let td = _td_.cloneNode(false);
             cellValue = arr[i][columns[j]];
             td.appendChild(document.createTextNode(arr[i][columns[j]] || ''));
             tr.appendChild(td);
-        ***REMOVED***
+        }
         table.appendChild(tr);
-    ***REMOVED***
+    }
     return table;
-***REMOVED***
+}
 
 // Adds a header row to the table and returns the set of columns.
 // Need to do union of keys from all records as some records may not contain
 // all records
-function addAllColumnHeaders(arr, table) ***REMOVED***
+function addAllColumnHeaders(arr, table) {
     let columnSet = [],
         tr = _tr_.cloneNode(false);
-    for (let i = 0, l = arr.length; i < l; i++) ***REMOVED***
-        for (let key in arr[i]) ***REMOVED***
-            if (arr[i].hasOwnProperty(key) && columnSet.indexOf(key) === -1) ***REMOVED***
+    for (let i = 0, l = arr.length; i < l; i++) {
+        for (let key in arr[i]) {
+            if (arr[i].hasOwnProperty(key) && columnSet.indexOf(key) === -1) {
                 columnSet.push(key);
                 let th = _th_.cloneNode(false);
                 th.appendChild(document.createTextNode(key));
                 tr.appendChild(th);
-            ***REMOVED***
-        ***REMOVED***
-    ***REMOVED***
+            }
+        }
+    }
     table.appendChild(tr);
     return columnSet;
-***REMOVED***
+}
 
-function linSpace(start, end, cardinality, data) ***REMOVED***
+function linSpace(start, end, cardinality, data) {
     let arr = [];
-    for (let i = 0; i < cardinality; i++) ***REMOVED***
+    for (let i = 0; i < cardinality; i++) {
         let date = data[i][0];
         date = date.split(', ')[1].split(' ').slice(0, 3).join(' ');
         arr.push(date);
-    ***REMOVED***
+    }
     return arr;
-***REMOVED***
+}
 
-function linSpaceZip(start, end, cardinality, data) ***REMOVED***
+function linSpaceZip(start, end, cardinality, data) {
     let arr = [];
-    for (let i = 0; i < cardinality; i++) ***REMOVED***
+    for (let i = 0; i < cardinality; i++) {
         let date = data[i][0];
         date = date.split(', ')[1].split(' ').slice(0, 3).join(' ');
-        arr.push(***REMOVED***x: date, y: data[i][1]***REMOVED***);
-    ***REMOVED***
+        arr.push({x: date, y: data[i][1]});
+    }
     return arr;
-***REMOVED***
+}
 
 
-let displayTable = () => ***REMOVED***
+let displayTable = () => {
     let votesDiv = document.getElementById("votesTable");
     let tradesDiv = document.getElementById("tradesTable");
     let chartCanvas = document.getElementById("chartCanvas");
-    // getCongresspersonData("Representative Cole, Tom", votesDiv, tradesDiv);
+    getCongresspersonData("Representative Cole, Tom", votesDiv, tradesDiv);
 
     let start = new Date('August 19, 2019');
     let end = new Date('March 9, 2020');
     getStockData('GOOG', start.toJSON(), end.toJSON(), chartCanvas);
-***REMOVED***
+}

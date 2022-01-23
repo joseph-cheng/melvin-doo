@@ -33,7 +33,7 @@ def get_stock_data():
     start = datetime.datetime.strptime(start_raw.split("T")[0], "%Y-%m-%d")
     end = datetime.datetime.strptime(end_raw.split("T")[0], "%Y-%m-%d")
 
-    return ***REMOVED***'data': get_stock_prices(ticker, start, end)***REMOVED***
+    return {'data': get_stock_prices(ticker, start, end)}
 
 
 # Returns list of names (for autocomplete)
@@ -55,33 +55,33 @@ def get_members_list():
 def get_congressperson_data():
     conn = mysql.open_connection()
     congressperson_name = request.args.get('name')
-    trades_query = f"SELECT persons.name, companies.company, trades.was_buy, trades.date FROM persons INNER JOIN trades ON (persons.ID = trades.person_ID) INNER JOIN companies ON (companies.ID = trades.company_ID) WHERE persons.name = '***REMOVED***congressperson_name***REMOVED***';"
+    trades_query = f"SELECT persons.name, companies.company, trades.was_buy, trades.date FROM persons INNER JOIN trades ON (persons.ID = trades.person_ID) INNER JOIN companies ON (companies.ID = trades.company_ID) WHERE persons.name = '{congressperson_name}';"
     trades_result = mysql._execute_sql(conn, trades_query)
 
-    votes_query = f"SELECT persons.name, bills.bill, votes.voted_for FROM persons INNER JOIN votes ON (persons.ID = votes.person_ID) INNER JOIN bills on (bills.ID = vote.bill_ID) WHERE persons.name = '***REMOVED***congressperson_name***REMOVED***';"
+    votes_query = f"SELECT persons.name, bills.bill, votes.voted_for FROM persons INNER JOIN votes ON (persons.ID = votes.person_ID) INNER JOIN bills on (bills.ID = votes.bill_ID) WHERE persons.name = '{congressperson_name}';"
     votes_result = mysql._execute_sql(conn, votes_query)
     mysql.close_connection(conn)
 
     trades_array = []
-    for row in result:
-        trades_array.append(***REMOVED***
+    for row in trades_result:
+        trades_array.append({
             "Name": row[0],
             "Ticker": row[1],
             "Buy/Sell": row[2],
             "Date": row[3].strftime("%Y-%m-%d")
-            ***REMOVED***)
+            })
 
     votes_array = []
-    for row in result:
-        votes_array.append(***REMOVED***
+    for row in votes_result:
+        votes_array.append({
             "Name": row[0],
             "Bill": row[1][:128],
             "For/Against": row[2]
-            ***REMOVED***)
+            })
 
 
-    return ***REMOVED***
+    return {
         'votes': votes_array,
 
         'trades': trades_array,
-    ***REMOVED***
+    }

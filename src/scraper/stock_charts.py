@@ -12,8 +12,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 #
 # RETURN: A list of tuples of the date and the value the stock it traded for
 def get_stock_prices(ticker: str, start: datetime, end: datetime, resolution: str = "DAILY"):
-    query = f'=GOOGLEFINANCE("***REMOVED***ticker***REMOVED***", "price", DATE(***REMOVED***start.year***REMOVED***,***REMOVED***start.month***REMOVED***,***REMOVED***start.day***REMOVED***), ' \
-            f'DATE(***REMOVED***end.year***REMOVED***,***REMOVED***end.month***REMOVED***,***REMOVED***end.day***REMOVED***), "***REMOVED***resolution***REMOVED***")'
+    query = f'=GOOGLEFINANCE("{ticker}", "price", DATE({start.year},{start.month},{start.day}), ' \
+            f'DATE({end.year},{end.month},{end.day}), "{resolution}")'
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets",
              "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
 

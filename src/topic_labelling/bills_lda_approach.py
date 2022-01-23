@@ -30,7 +30,7 @@ def get_data():
     data_path = "long_term_bill_records/summary"
     filenameList = [f for f in listdir(data_path) if isfile(join(data_path, f))]
     for filename in filenameList:
-        file = open(f"***REMOVED***data_path***REMOVED***/***REMOVED***filename***REMOVED***", "r")
+        file = open(f"{data_path}/{filename}", "r")
         desc = file.readline()
         corpus.append(desc)
 
@@ -65,7 +65,7 @@ def print_results():
     lda.fit(tfidf_matrix)
     
     for i,topic in enumerate(lda.components_):
-        print(f'Topic #***REMOVED***i***REMOVED***:')
+        print(f'Topic #{i}:')
         print([tfidf_vectorizer.get_feature_names_out()[i] for i in topic.argsort()[-10:]])
         print('\n')
 
