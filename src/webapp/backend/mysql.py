@@ -96,7 +96,7 @@ def _remove_trade(conn, personID, companyID, wasBuy, date):
 
 # Add a new vote to the Votes table
 def _add_vote(conn, personID, billID, votedFor, date):
-	_execute_sql(conn, "INSERT INTO votes (person_ID, bill_ID, voted_for, date) VALUES ({0}, {1}, {2}, {3});".format(personID, billID, 1 if votedFor else 0, date))
+	_execute_sql(conn, "INSERT INTO votes (person_ID, bill_ID, voted_for, date) VALUES ({0}, {1}, '{2}', STR_TO_DATE('{3}', \"%Y-%m-%d\"));".format(personID, billID, "for" if votedFor == 1 else "against" if votedFor == -1 else "abstain", date))
 
 
 # Remove a vote from the Votes table
@@ -120,8 +120,7 @@ def _get_id(conn, table, column, value):
 	return int(res[0][0])
 
 
-def process_vote(bill):
-	conn = _open_connection()
+def process_vote(conn, bill):
 
 	# Extract variables from bill
 	title = bill.title
@@ -148,11 +147,10 @@ def process_vote(bill):
 		if personID is None:
 			_add_person(conn, person)
 			personID = _get_id(conn, "persons", "name", person)
-		voted_for = vote == 1
-		date = datetime.date.today()
+		voted_for = vote 
+		date = bill.date
 		_add_vote(conn, personID, billID, voted_for, date)
 
-	_close_connection(conn)
 
 
 def process_trade(conn, trade):

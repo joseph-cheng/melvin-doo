@@ -12,11 +12,9 @@ if os.environ['HOME'] == '/home/joe':
 
     import sys
     sys.path.insert(0, "../../../")
-
-    from src.scraper.stock_charts import get_stock_prices
 else:
     import src.webapp.backend.mysql
-    from src.scraper.stock_charts import get_stock_prices
+from src.scraper.stock_charts import get_stock_prices
 
 
 app = Flask(__name__)
