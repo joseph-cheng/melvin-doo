@@ -15,15 +15,16 @@ function getNames() {
 }
 
 // TODO: remove get prefix & make consistent with above endpoint
-function getCongresspersonData(congressperson, votesDiv, tradesDiv) {
-    fetch('http://localhost:5000/get_congressperson_bills?name=' + congressperson).then((response) => {
-        return response.json();
-    }).then((response) => {
-        console.log(response);
-        votesDiv.appendChild(buildVotesTable(response['votes']));
-        //tradesDiv.appendChild(buildTradesTable(response['trades']));
-    });
-}
+// function getCongresspersonData(congressperson, votesDiv) {
+//     c = "Representative Ryan, Paul D."
+//     fetch('http://localhost:5000/get_congressperson_bills?name=' + c).then((response) => {
+//         return response.json();
+//     }).then((response) => {
+//         console.log(response);
+//         votesDiv.appendChild(buildVotesTable(response['votes']));
+//         //tradesDiv.appendChild(buildTradesTable(response['trades']));
+//     });
+// }
 
 function getStockData(ticker, start, end, chartCanvas) {
     fetch(`http://localhost:5000/stocks?ticker=${ticker}&start=${start}&end=${end}`).then((response) => {
@@ -84,7 +85,7 @@ function buildVotesTable(arr) {
         // let a = document.createElement("a");
         arr[i]['Bill'] = arr[i]['Bill'][0].toUpperCase() + arr[i]['Bill'].substring(1)
         arr[i]['Bill'] += '.';
-        tr.addEventListener("click", () => { showTrades(i) })
+        tr.addEventListener("click", () => { showTrades(67, arr[i]['Name']) })
         tr.classList.add("vote-row")
         // tr.appendChild(a);
         for (let j = 0, maxj = columns.length; j < maxj; ++j) {
@@ -101,8 +102,14 @@ function buildVotesTable(arr) {
 function buildTradesTable(arr) {
     let table = _table_.cloneNode(false),
         columns = addAllColumnHeaders(arr, table);
+
+    let start = new Date('January 23, 2020');
+    let end = new Date('January 23, 2022');
+    let chartCanvas = document.getElementById("chartCanvas");
+    getStockData('GOOG', start.toJSON(), end.toJSON(), chartCanvas);
     for (let i = 0; i < arr.length; ++i) {
         let tr = _tr_.cloneNode(false);
+        tr.addEventListener('click', () => { getStockData(arr[i]['ticker'], start, end, chartCanvas)})
         for (let j = 0, maxj = columns.length; j < maxj; ++j) {
             let td = _td_.cloneNode(false);
             cellValue = arr[i][columns[j]];
@@ -154,10 +161,10 @@ function linSpaceZip(start, end, cardinality, data) {
     return arr;
 }
 
-let showTrades = (billID) => {
+let showTrades = (billID, name) => {
     var tradesDiv = document.getElementById("tradesTable");
     tradesDiv.innerHTML = '';
-    fetch(`http://localhost:5000/trades?billID=${billID}`).then((response) => {
+    fetch(`http://localhost:5000/trades?billID=${billID}&name=${name}`).then((response) => {
         return response.json();
     }).then((response) => {
         console.log(response);
@@ -165,14 +172,26 @@ let showTrades = (billID) => {
     });
 }
 
+let showVotes = (name) => {
+    var votesDiv = document.getElementById("tradesTable");
+    votesDiv.innerHTML = '';
+    fetch(`http://localhost:5000/get_congressperson_bills?name=${name}`).then((response) => {
+        return response.json();
+    }).then((response) => {
+        console.log(response);
+        votesDiv.appendChild(buildVotesTable(response['votes']));
+    });
+}
+
 
 let displayTable = () => {
-    let votesDiv = document.getElementById("votesTable");
-    var tradesDiv = document.getElementById("tradesTable");
-    let chartCanvas = document.getElementById("chartCanvas");
-    getCongresspersonData("Representative Cole, Tom", votesDiv, tradesDiv);
-
-    let start = new Date('August 19, 2019');
-    let end = new Date('March 9, 2020');
-    getStockData('GOOG', start.toJSON(), end.toJSON(), chartCanvas);
+    let input = document.getElementById("autocomplete-input")
+    input.addEventListener("keyup", (e) => {
+        if (e.keyCode == 13) {
+            showVotes(input.value)
+        }
+    })
+    // let votesDiv = document.getElementById("votesTable");
+    // var tradesDiv = document.getElementById("tradesTable");
+    // getCongresspersonData("Representative Cole, Tom", votesDiv);
 }

@@ -84,7 +84,7 @@ def get_trades():
 
     conn = mysql.open_connection()
 
-    query = "SELECT company_id, was_buy, date FROM trades"
+    query = "SELECT cc.company_id, was_buy, date FROM trades"
     query += " INNER JOIN companycategories AS cc ON cc.company_id = trades.company_id"
     query += " INNER JOIN billcategories AS bc ON bc.category_id = cc.category_id"
     query += " INNER JOIN persons AS p ON p.id = trades.person_id"
@@ -99,7 +99,7 @@ def get_trades():
 
     mysql.close_connection(conn)
 
-    return trades
+    return {'trades': trades }
 
 @app.route("/trades_old", methods=['GET'])
 def get_trades_old():

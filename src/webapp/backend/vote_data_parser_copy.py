@@ -14,7 +14,7 @@ import pathlib
 print("")
 print(pathlib.Path(__file__))
 
-data_path = "../../scraper/long_term_bill_records"
+data_path = "long_term_bill_records"
 
 
 @dataclass
